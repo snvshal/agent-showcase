@@ -6,13 +6,20 @@ import type { EveMessagePart } from "eve/react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Send, Loader2, Bot, BrainCircuit, CheckCircle, XCircle, User, Wrench } from "lucide-react";
+
+const loadingMessages = [
+  "Understanding your query...",
+  "Analyzing financial data...",
+  "Searching transactions...",
+  "Compiling results...",
+];
 
 export default function AgentPanel() {
   const agent = useEveAgent();
   const [input, setInput] = useState("");
+  const [msgIndex, setMsgIndex] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const isBusy = agent.status === "submitted" || agent.status === "streaming";
@@ -20,6 +27,17 @@ export default function AgentPanel() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [agent.data.messages]);
+
+  useEffect(() => {
+    if (!isBusy) {
+      setMsgIndex(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setMsgIndex((i) => (i + 1) % loadingMessages.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [isBusy]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -189,15 +207,11 @@ export default function AgentPanel() {
                 agent.data.messages.length > 0 &&
                 agent.data.messages[agent.data.messages.length - 1]
                   ?.role === "user" && (
-                  <div className="flex items-start gap-2 w-full">
-                    <div className="bg-muted rounded-xl px-3 py-2 text-sm w-full">
-                      <Skeleton className="h-4 w-3/4 mb-2" />
-                      <Skeleton className="h-4 w-1/2 mb-2" />
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
-                        <Loader2 className="size-3 animate-spin" />
-                        Agent is thinking...
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-2.5 px-1 py-1.5">
+                    <Loader2 className="size-3.5 animate-spin text-muted-foreground shrink-0" />
+                    <span className="text-sm bg-gradient-to-r from-muted-foreground via-foreground to-muted-foreground bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2.5s_ease-in-out_infinite]">
+                      {loadingMessages[msgIndex]}
+                    </span>
                   </div>
                 )}
             </div>
