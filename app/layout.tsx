@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Financial Agent Showcase",
+  title: "Agent Showcase",
   description:
-    "AI-powered financial data analysis — ask an agent to explore income and expense transactions.",
+    "A collection of AI agent demonstrations — ask an agent to explore income and expense transactions.",
 };
 
 export default function RootLayout({

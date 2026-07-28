@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# agent-showcase
+
+A collection of AI agent demonstrations built with [Eve](https://eve.vercel.ai) by Vercel, [Next.js](https://nextjs.org), [shadcn/ui](https://ui.shadcn.com), and [Bun](https://bun.sh).
+
+Each showcase features a different agent use case with real tool calling, streaming responses, and a polished UI.
+
+## Showcases
+
+### Financial Transactions Agent
+
+A read-only financial data analyst agent. Browse income/expense transactions in a sortable table and ask natural-language questions about the data.
+
+- **Tool**: Single `search_transactions` tool with parameterized filters (type, category, department, amount range, date range, group-by, sort)
+- **Data**: 80+ seeded transactions stored as JSON, auto-seeded on first access
+- **UI**: Side-by-side layout (data table + agent chat), responsive tabs on mobile
+- **Features**: Streaming responses, visible tool calls with reasoning, shimmer loading status
+
+## Tech Stack
+
+| Tool | Purpose |
+|---|---|
+| [Bun](https://bun.sh) | Runtime & package manager |
+| [Next.js 16](https://nextjs.org) | React framework |
+| [Eve](https://eve.vercel.ai) | Agent framework by Vercel |
+| [shadcn/ui](https://ui.shadcn.com) (base-nova) | UI components |
+| [Tailwind CSS v4](https://tailwindcss.com) | Styling |
+| [lucide-react](https://lucide.dev) | Icons |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Adding a Showcase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Each showcase lives in its own directory under `app/` with corresponding agent tools under `agent/`. See the Financial Transactions showcase as a reference pattern.
