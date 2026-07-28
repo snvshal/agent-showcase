@@ -91,8 +91,8 @@ export default function DataTable() {
         className="flex-1 min-h-0 overflow-auto rounded-lg border"
       >
         <Table>
-          <TableHeader>
-            <TableRow>
+          <TableHeader className="sticky top-0 z-10">
+            <TableRow className="bg-background">
               <TableHead
                 className="cursor-pointer hover:text-foreground"
                 onClick={() => toggleSort("date")}
