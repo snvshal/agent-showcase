@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import {
   Table,
   TableBody,
@@ -8,54 +8,54 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Input } from "@/components/ui/input"
 
 interface Transaction {
-  id: number;
-  date: string;
-  description: string;
-  type: "income" | "expense";
-  category: string;
-  amount: number;
-  department: string;
-  payment_method: string;
-  counterparty: string;
+  id: number
+  date: string
+  description: string
+  type: "income" | "expense"
+  category: string
+  amount: number
+  department: string
+  payment_method: string
+  counterparty: string
 }
 
-type SortKey = "date" | "amount";
-type SortDir = "asc" | "desc";
+type SortKey = "date" | "amount"
+type SortDir = "asc" | "desc"
 
 export default function DataTable() {
-  const [data, setData] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [sortBy, setSortBy] = useState<SortKey>("date");
-  const [sortOrder, setSortOrder] = useState<SortDir>("desc");
+  const [data, setData] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [query, setQuery] = useState("")
+  const [typeFilter, setTypeFilter] = useState("")
+  const [sortBy, setSortBy] = useState<SortKey>("date")
+  const [sortOrder, setSortOrder] = useState<SortDir>("desc")
 
   useEffect(() => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (query) params.set("query", query);
-    if (typeFilter) params.set("type", typeFilter);
-    params.set("sortBy", sortBy);
-    params.set("sortOrder", sortOrder);
+    setLoading(true)
+    const params = new URLSearchParams()
+    if (query) params.set("query", query)
+    if (typeFilter) params.set("type", typeFilter)
+    params.set("sortBy", sortBy)
+    params.set("sortOrder", sortOrder)
 
     fetch(`/api/transactions?${params}`)
       .then((r) => r.json())
       .then(setData)
-      .finally(() => setLoading(false));
-  }, [query, typeFilter, sortBy, sortOrder]);
+      .finally(() => setLoading(false))
+  }, [query, typeFilter, sortBy, sortOrder])
 
   function toggleSort(key: SortKey) {
     if (sortBy === key) {
-      setSortOrder((o) => (o === "asc" ? "desc" : "asc"));
+      setSortOrder((o) => (o === "asc" ? "desc" : "asc"))
     } else {
-      setSortBy(key);
-      setSortOrder("desc");
+      setSortBy(key)
+      setSortOrder("desc")
     }
   }
 
@@ -63,12 +63,12 @@ export default function DataTable() {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(n);
+    }).format(n)
   }
 
   return (
-    <div className="flex flex-col gap-3 flex-1 min-h-0">
-      <div className="flex gap-2 items-center">
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex items-center gap-2">
         <Input
           placeholder="Search transactions..."
           value={query}
@@ -78,7 +78,7 @@ export default function DataTable() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="h-8 rounded-lg border border-input bg-transparent px-2 text-sm"
+          className="border-input h-8 rounded-lg border bg-transparent px-2 text-sm"
         >
           <option value="">All types</option>
           <option value="income">Income</option>
@@ -86,15 +86,12 @@ export default function DataTable() {
         </select>
       </div>
 
-      <div
-        data-slot="table-scroll"
-        className="flex-1 min-h-0 overflow-auto rounded-lg border"
-      >
+      <div data-slot="table-scroll" className="min-h-0 flex-1 overflow-auto rounded-lg border">
         <Table>
           <TableHeader className="sticky top-0 z-10">
             <TableRow className="bg-background">
               <TableHead
-                className="cursor-pointer hover:text-foreground"
+                className="hover:text-foreground cursor-pointer"
                 onClick={() => toggleSort("date")}
               >
                 Date {sortBy === "date" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
@@ -103,7 +100,7 @@ export default function DataTable() {
               <TableHead>Type</TableHead>
               <TableHead>Category</TableHead>
               <TableHead
-                className="cursor-pointer hover:text-foreground text-right"
+                className="hover:text-foreground cursor-pointer text-right"
                 onClick={() => toggleSort("amount")}
               >
                 Amount {sortBy === "amount" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
@@ -116,18 +113,32 @@ export default function DataTable() {
             {loading ? (
               Array.from({ length: 8 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-48" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="ml-auto h-4 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-28" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                <TableCell colSpan={7} className="text-muted-foreground py-8 text-center">
                   No transactions found
                 </TableCell>
               </TableRow>
@@ -175,5 +186,5 @@ export default function DataTable() {
         </Table>
       </div>
     </div>
-  );
+  )
 }

@@ -17,14 +17,14 @@ A read-only financial data analyst agent. Browse income/expense transactions in 
 
 ## Tech Stack
 
-| Tool | Purpose |
-|---|---|
-| [Bun](https://bun.sh) | Runtime & package manager |
-| [Next.js 16](https://nextjs.org) | React framework |
-| [Eve](https://eve.vercel.ai) | Agent framework by Vercel |
-| [shadcn/ui](https://ui.shadcn.com) (base-nova) | UI components |
-| [Tailwind CSS v4](https://tailwindcss.com) | Styling |
-| [lucide-react](https://lucide.dev) | Icons |
+| Tool                                           | Purpose                   |
+| ---------------------------------------------- | ------------------------- |
+| [Bun](https://bun.sh)                          | Runtime & package manager |
+| [Next.js 16](https://nextjs.org)               | React framework           |
+| [Eve](https://eve.vercel.ai)                   | Agent framework by Vercel |
+| [shadcn/ui](https://ui.shadcn.com) (base-nova) | UI components             |
+| [Tailwind CSS v4](https://tailwindcss.com)     | Styling                   |
+| [lucide-react](https://lucide.dev)             | Icons                     |
 
 ## Getting Started
 

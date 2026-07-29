@@ -1,38 +1,31 @@
-import { writeFileSync, existsSync, mkdirSync, readFileSync } from "fs";
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from "fs"
 
 export interface Transaction {
-  id: number;
-  date: string;
-  description: string;
-  type: "income" | "expense";
-  category: string;
-  amount: number;
-  department: string;
-  payment_method: string;
-  counterparty: string;
-  notes: string;
+  id: number
+  date: string
+  description: string
+  type: "income" | "expense"
+  category: string
+  amount: number
+  department: string
+  payment_method: string
+  counterparty: string
+  notes: string
 }
 
-const departments = [
-  "Engineering",
-  "Sales",
-  "Marketing",
-  "Operations",
-  "HR",
-  "Finance",
-];
-const paymentMethods = ["Bank Transfer", "Credit Card", "ACH", "Check", "Wire Transfer"];
+const departments = ["Engineering", "Sales", "Marketing", "Operations", "HR", "Finance"]
+const paymentMethods = ["Bank Transfer", "Credit Card", "ACH", "Check", "Wire Transfer"]
 
 function rand<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(Math.random() * arr.length)]
 }
 
 function randBetween(min: number, max: number): number {
-  return Math.round((Math.random() * (max - min) + min) * 100) / 100;
+  return Math.round((Math.random() * (max - min) + min) * 100) / 100
 }
 
 function formatDate(year: number, month: number, day: number): string {
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
 }
 
 const incomeTemplates = [
@@ -48,7 +41,7 @@ const incomeTemplates = [
   { cat: "Partnerships", desc: "Co-marketing revenue share", min: 3000, max: 10000 },
   { cat: "Investments", desc: "Interest income", min: 500, max: 3000 },
   { cat: "Investments", desc: "Dividend payment", min: 1000, max: 5000 },
-];
+]
 
 const expenseTemplates = [
   { cat: "Payroll", desc: "Employee salaries — {month} {year}", min: 35000, max: 55000 },
@@ -74,39 +67,73 @@ const expenseTemplates = [
   { cat: "Professional Services", desc: "Legal retainers", min: 1000, max: 5000 },
   { cat: "Professional Services", desc: "Accounting & audit fees", min: 1000, max: 4000 },
   { cat: "Professional Services", desc: "External consulting", min: 3000, max: 10000 },
-];
+]
 
 const categoryCounterparties: Record<string, string[]> = {
   Consulting: ["McKinsey Digital", "Deloitte Consulting", "PwC Strategy", "Accenture"],
   Subscriptions: ["Monthly Subscribers", "Enterprise Clients", "Annual Subscribers"],
-  "Product Sales": ["Acme Corp", "Globex Inc", "Initech", "Hooli", "Stark Industries", "Wayne Enterprises", "Oscorp", "Cyberdyne Systems"],
+  "Product Sales": [
+    "Acme Corp",
+    "Globex Inc",
+    "Initech",
+    "Hooli",
+    "Stark Industries",
+    "Wayne Enterprises",
+    "Oscorp",
+    "Cyberdyne Systems",
+  ],
   Partnerships: ["Tech Partners Inc", "Solution Resellers", "Channel Partners"],
   Investments: ["Treasury Bills", "Money Market Fund", "Corporate Bonds"],
   Payroll: ["Employees", "Contractors", "Staff"],
   Rent: ["Property Management LLC", "WeWork", "Regus"],
-  Software: ["Amazon Web Services", "Google Cloud", "Microsoft Azure", "Datadog", "Atlassian", "Slack", "Linear", "Vercel"],
+  Software: [
+    "Amazon Web Services",
+    "Google Cloud",
+    "Microsoft Azure",
+    "Datadog",
+    "Atlassian",
+    "Slack",
+    "Linear",
+    "Vercel",
+  ],
   Marketing: ["Google Ads", "Meta Platforms", "LinkedIn", "HubSpot", "MarketTo"],
   Travel: ["Delta Air Lines", "United Airlines", "Marriott", "Hilton", "Airbnb"],
   Office: ["Staples", "Amazon Business", "IKEA", "Herman Miller"],
   Utilities: ["PowerGrid Corp", "Comcast", "AT&T", "Verizon"],
   Insurance: ["BlueCross", "Aetna", "MetLife", "State Farm"],
   "Professional Services": ["Lawson & Associates", "Pricewaterhouse", "KPMG", "Deloitte Tax"],
-};
+}
 
-const counterpartyIncome = ["Acme Corp", "Globex Inc", "Initech", "Hooli", "Stark Industries", "Wayne Enterprises", "Oscorp", "Cyberdyne Systems", "Monthly Subscribers", "Enterprise Clients", "Annual Subscribers", "McKinsey Digital", "Deloitte Consulting", "PwC Strategy", "Accenture"];
+const counterpartyIncome = [
+  "Acme Corp",
+  "Globex Inc",
+  "Initech",
+  "Hooli",
+  "Stark Industries",
+  "Wayne Enterprises",
+  "Oscorp",
+  "Cyberdyne Systems",
+  "Monthly Subscribers",
+  "Enterprise Clients",
+  "Annual Subscribers",
+  "McKinsey Digital",
+  "Deloitte Consulting",
+  "PwC Strategy",
+  "Accenture",
+]
 
 export function generateTransactions(): Transaction[] {
-  const records: Transaction[] = [];
-  let id = 1;
+  const records: Transaction[] = []
+  let id = 1
 
   for (let month = 1; month <= 6; month++) {
-    const year = 2025;
-    const daysInMonth = new Date(year, month, 0).getDate();
+    const year = 2025
+    const daysInMonth = new Date(year, month, 0).getDate()
 
-    const incomeCount = 2 + Math.floor(Math.random() * 2);
+    const incomeCount = 2 + Math.floor(Math.random() * 2)
     for (let i = 0; i < incomeCount; i++) {
-      const template = rand(incomeTemplates);
-      const day = Math.min(1 + Math.floor(Math.random() * 28), daysInMonth);
+      const template = rand(incomeTemplates)
+      const day = Math.min(1 + Math.floor(Math.random() * 28), daysInMonth)
       records.push({
         id: id++,
         date: formatDate(year, month, day),
@@ -118,14 +145,19 @@ export function generateTransactions(): Transaction[] {
         payment_method: rand(paymentMethods),
         counterparty: rand(counterpartyIncome),
         notes: "",
-      });
+      })
     }
 
-    const expenseCount = 3 + Math.floor(Math.random() * 3);
+    const expenseCount = 3 + Math.floor(Math.random() * 3)
     for (let i = 0; i < expenseCount; i++) {
-      const template = rand(expenseTemplates);
-      const day = Math.min(1 + Math.floor(Math.random() * 28), daysInMonth);
-      const events = ["QBR summit", "team offsite", "customer meetings", "conference Q" + Math.ceil(month / 3)];
+      const template = rand(expenseTemplates)
+      const day = Math.min(1 + Math.floor(Math.random() * 28), daysInMonth)
+      const events = [
+        "QBR summit",
+        "team offsite",
+        "customer meetings",
+        "conference Q" + Math.ceil(month / 3),
+      ]
       records.push({
         id: id++,
         date: formatDate(year, month, day),
@@ -140,10 +172,10 @@ export function generateTransactions(): Transaction[] {
         payment_method: rand(paymentMethods),
         counterparty: rand(categoryCounterparties[template.cat] ?? ["Vendor"]),
         notes: "",
-      });
+      })
     }
   }
 
-  records.sort((a, b) => a.date.localeCompare(b.date));
-  return records;
+  records.sort((a, b) => a.date.localeCompare(b.date))
+  return records
 }
