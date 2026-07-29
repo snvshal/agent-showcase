@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Receipt, Table2, Bot } from "lucide-react"
 import DataTable from "@/components/DataTable"
-import AgentPanel from "@/components/AgentPanel"
+import AgentPanel from "@/components/agent/AgentPanel"
 
 export default function Home() {
   const [tab, setTab] = useState<"data" | "agent">("data")

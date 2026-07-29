@@ -29,25 +29,33 @@ type SortKey = "date" | "amount"
 type SortDir = "asc" | "desc"
 
 export default function DataTable() {
-  const [data, setData] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<Transaction[] | null>(null)
   const [query, setQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState("")
   const [sortBy, setSortBy] = useState<SortKey>("date")
   const [sortOrder, setSortOrder] = useState<SortDir>("desc")
 
+  const loading = data === null
+
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams()
     if (query) params.set("query", query)
     if (typeFilter) params.set("type", typeFilter)
     params.set("sortBy", sortBy)
     params.set("sortOrder", sortOrder)
 
+    let cancelled = false
+
     fetch(`/api/transactions?${params}`)
       .then((r) => r.json())
-      .then(setData)
-      .finally(() => setLoading(false))
+      .then((result) => {
+        if (!cancelled) setData(result)
+      })
+
+    return () => {
+      cancelled = true
+      setData(null)
+    }
   }, [query, typeFilter, sortBy, sortOrder])
 
   function toggleSort(key: SortKey) {

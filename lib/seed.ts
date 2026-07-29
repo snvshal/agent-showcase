@@ -1,5 +1,3 @@
-import { writeFileSync, existsSync, mkdirSync, readFileSync } from "fs"
-
 export interface Transaction {
   id: number
   date: string
