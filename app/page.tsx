@@ -4,19 +4,28 @@ import { useState } from "react"
 import { Receipt, Table2, Bot } from "lucide-react"
 import DataTable from "@/components/DataTable"
 import AgentPanel from "@/components/agent/AgentPanel"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export default function Home() {
   const [tab, setTab] = useState<"data" | "agent">("data")
 
   return (
     <div className="flex h-screen flex-col">
-      <header className="flex shrink-0 flex-col gap-0.5 border-b px-4 py-3 lg:flex-row lg:items-center lg:gap-3 lg:px-6">
+      <header className="flex shrink-0 flex-col border-b px-4 py-3 lg:flex-row lg:items-center lg:gap-3 lg:px-6">
         <div className="flex items-center gap-1.5 text-base font-semibold tracking-tight lg:text-lg">
           <Receipt className="size-4 shrink-0 lg:size-5" />
           <span>Financial Transactions</span>
+          <div className="ml-auto lg:hidden">
+            <ThemeToggle />
+          </div>
         </div>
-        <div className="text-muted-foreground text-xs">
-          AI Agent Showcase — powered by Eve + Next.js
+        <div className="flex items-center gap-3 lg:flex-1">
+          <div className="text-muted-foreground text-xs">
+            AI Agent Showcase — powered by Eve + Next.js
+          </div>
+          <div className="hidden lg:ml-auto lg:block">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
