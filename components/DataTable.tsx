@@ -12,6 +12,15 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu"
+import { ChevronDown } from "lucide-react"
 
 interface Transaction {
   id: number
@@ -83,15 +92,25 @@ export default function DataTable() {
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1"
         />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          className="border-input h-8 rounded-lg border bg-transparent px-2 text-sm"
-        >
-          <option value="">All types</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="outline" className="h-8 shrink-0">
+                {typeFilter
+                  ? typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)
+                  : "All types"}
+                <ChevronDown className="size-3.5 opacity-60" />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end">
+            <DropdownMenuRadioGroup value={typeFilter} onValueChange={setTypeFilter}>
+              <DropdownMenuRadioItem value="">All types</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="income">Income</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="expense">Expense</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div data-slot="table-scroll" className="min-h-0 flex-1 overflow-auto rounded-lg border">
