@@ -1,20 +1,24 @@
 "use client"
 
-import { BrainCircuit } from "lucide-react"
 import type { EveMessagePart } from "eve/react"
+import { Brain, ChevronDown } from "lucide-react"
 
 interface ReasoningRendererProps {
   part: EveMessagePart & { type: "reasoning" }
 }
 
 export default function ReasoningRenderer({ part }: ReasoningRendererProps) {
+  if (part.state === "streaming") return null
+
   return (
-    <details className="text-muted-foreground mt-1 text-xs">
-      <summary className="hover:text-foreground cursor-pointer text-[11px] italic opacity-70">
-        <BrainCircuit className="mr-1 inline size-3" /> Agent thinking
+    <details className="group my-3">
+      <summary className="text-muted-foreground flex cursor-pointer list-none items-center gap-1.5 text-sm [&::-webkit-details-marker]:hidden">
+        <Brain className="size-3.5" />
+        <span>Agent thought</span>
+        <ChevronDown className="ml-auto inline-block size-4 transition-transform group-open:rotate-180" />
       </summary>
-      <div className="border-muted-foreground/30 mt-1 border-l-2 pl-2 whitespace-pre-wrap italic">
-        {part.text || "(thinking...)"}
+      <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm whitespace-pre-wrap">
+        {part.text}
       </div>
     </details>
   )
