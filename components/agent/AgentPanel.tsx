@@ -1,13 +1,11 @@
 "use client"
 
-import { useState, useEffect, useMemo, type ReactNode } from "react"
+import { useState, useEffect, useMemo, useRef, type ReactNode } from "react"
 import { useEveAgent } from "eve/react"
 import type { EveMessageData, EveMessagePart } from "eve/react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Send, Loader2, Bot, Square } from "lucide-react"
-import { Marker, MarkerIcon, MarkerContent } from "@/components/ui/marker"
+import { Send, Bot, Square } from "lucide-react"
 import {
   MessageScrollerProvider,
   MessageScroller,
@@ -98,9 +96,16 @@ export default function AgentPanel({
   const agent = useEveAgent()
   const [input, setInput] = useState("")
   const [msgTick, setMsgTick] = useState(0)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const pendingInput = useMemo(() => findPendingInput(agent.data.messages), [agent.data.messages])
 
   const isBusy = agent.status === "submitted" || agent.status === "streaming"
+
+  useEffect(() => {
+    if (!input && textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+    }
+  }, [input])
 
   useEffect(() => {
     if (!isBusy) return
@@ -174,15 +179,31 @@ export default function AgentPanel({
 
   const showBusy = isBusy && agent.data.messages[agent.data.messages.length - 1]?.role === "user"
 
+  const lastUserMessage = agent.data.messages.reduce<string | null>((found, msg) => {
+    if (msg.role !== "user") return found
+    const textParts = msg.parts.filter((p) => p.type === "text")
+    return textParts.length > 0 ? textParts.map((p) => (p as EveMessagePart & { type: "text" }).text).join("\n") : found
+  }, null)
+
   return (
-    <Card size="sm" className={`flex h-full min-h-0 flex-col ${className ?? ""}`}>
+    <Card size="sm" className={`flex h-full min-h-0 flex-col pb-0 ${className ?? ""}`}>
       <CardHeader>
         <CardTitle>Agent Chat</CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
         {agent.status === "error" && agent.error && (
-          <div className="mx-3 mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600 dark:border-red-900 dark:bg-red-950/20 dark:text-red-400">
-            {agent.error.message ?? String(agent.error)}
+          <div className="mx-3 mt-2 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600 dark:border-red-900 dark:bg-red-950/20 dark:text-red-400">
+            <span className="flex-1">{agent.error.message ?? String(agent.error)}</span>
+            {lastUserMessage && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 border-red-200 px-2 text-[11px] text-red-600 hover:bg-red-100 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40"
+                onClick={() => agent.send({ message: lastUserMessage })}
+              >
+                Retry
+              </Button>
+            )}
           </div>
         )}
         {agent.data.messages.length === 0 ? (
@@ -223,7 +244,9 @@ export default function AgentPanel({
                         ) : (
                           <div className="text-sm leading-relaxed">
                             {!hasVisibleParts && isBusy && isStreamingMsg && isLastMsg ? (
-                              <LoadingStatus text={loadingMessages[msgIndex]} />
+                              <div className="my-3">
+                                <LoadingStatus text={loadingMessages[msgIndex]} />
+                              </div>
                             ) : (
                               <>
                                 {msg.parts.map((part, i) =>
@@ -244,14 +267,11 @@ export default function AgentPanel({
 
                   {showBusy && (
                     <MessageScrollerItem>
-                      <Marker role="status">
-                        <MarkerIcon>
-                          <Loader2 className="size-4 animate-spin" />
-                        </MarkerIcon>
-                        <MarkerContent className="from-muted-foreground via-foreground to-muted-foreground animate-[shimmer_2.5s_ease-in-out_infinite] bg-gradient-to-r bg-[length:200%_100%] bg-clip-text text-sm text-transparent">
-                          {loadingMessages[msgIndex]}
-                        </MarkerContent>
-                      </Marker>
+                      <div className="text-sm leading-relaxed">
+                        <div className="my-3">
+                          <LoadingStatus text={loadingMessages[msgIndex]} />
+                        </div>
+                      </div>
                     </MessageScrollerItem>
                   )}
                 </MessageScrollerContent>
@@ -301,33 +321,56 @@ export default function AgentPanel({
                     inputResponses: [{ requestId: pendingInput.requestId, text }],
                   })
                 }}
-                className="flex items-center gap-2"
+                className="flex items-start gap-2"
               >
-                <Input
+                <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onInput={(e) => {
+                    e.currentTarget.style.height = "auto"
+                    e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 96)}px`
+                  }}
                   placeholder="Type your response..."
-                  className="flex-1"
+                  rows={1}
+                  className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 h-9 min-h-9 max-h-24 w-full min-w-0 resize-none rounded-lg border bg-transparent px-3 py-1.5 text-base transition-colors outline-none focus-visible:ring-3 md:text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault()
+                      e.currentTarget.form?.requestSubmit()
+                    }
+                  }}
                 />
-                <Button type="submit" size="icon" disabled={!input.trim()}>
+                <Button type="submit" size="icon-lg" disabled={!input.trim()} className="shrink-0">
                   <Send className="size-4" />
                 </Button>
               </form>
             )}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t p-3">
-            <Input
+          <form onSubmit={handleSubmit} className="flex items-start gap-2 border-t p-3">
+            <textarea
+              ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onInput={(e) => {
+                e.currentTarget.style.height = "auto"
+                e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 128)}px`
+              }}
               placeholder={placeholder}
               disabled={isBusy}
-              className="flex-1"
+              rows={1}
+              className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 disabled:bg-input/50 dark:bg-input/30 dark:disabled:bg-input/80 h-9 min-h-9 max-h-24 w-full min-w-0 resize-none rounded-lg border bg-transparent px-3 py-1.5 text-base transition-colors outline-none focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  e.currentTarget.form?.requestSubmit()
+                }
+              }}
             />
             {isBusy ? (
               <Button
                 type="button"
-                size="icon"
+                size="icon-lg"
                 variant="outline"
                 onClick={(e) => {
                   e.preventDefault()
@@ -337,7 +380,7 @@ export default function AgentPanel({
                 <Square className="size-4" />
               </Button>
             ) : (
-              <Button type="submit" size="icon" disabled={!input.trim()}>
+              <Button type="submit" size="icon-lg" disabled={!input.trim()}>
                 <Send className="size-4" />
               </Button>
             )}

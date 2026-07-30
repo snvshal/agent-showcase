@@ -3,6 +3,7 @@
 import type { ReactNode } from "react"
 import type { EveMessagePart } from "eve/react"
 import { CheckCircle, XCircle, ChevronDown, Loader2 } from "lucide-react"
+import { shimmerTextClass } from "@/components/agent/renderers/LoadingStatus"
 
 export interface ToolCallRendererProps {
   part: EveMessagePart & { type: "dynamic-tool" }
@@ -21,13 +22,13 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
       <details className="group my-3">
         <summary className="text-muted-foreground flex cursor-pointer list-none items-center gap-1.5 text-sm [&::-webkit-details-marker]:hidden">
           <Loader2 className="size-3.5 animate-spin" />
-          <span className="from-muted-foreground via-foreground to-muted-foreground animate-[shimmer_2.5s_ease-in-out_infinite] bg-gradient-to-r bg-[length:200%_100%] bg-clip-text text-transparent">Thinking...</span>
+          <span className={shimmerTextClass}>Thinking...</span>
           {hasBody ? (
             <ChevronDown className="ml-auto inline-block size-4 transition-transform group-open:rotate-180" />
           ) : null}
         </summary>
         {hasBody ? (
-          <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm">
+          <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm group-open:animate-[slide-down_200ms_ease-out]">
             <pre className="text-muted-foreground max-h-[200px] overflow-x-auto whitespace-pre-wrap">
               {part.input !== undefined
                 ? (typeof part.input === "string" ? part.input : JSON.stringify(part.input, null, 1)).slice(0, 2000)
@@ -48,7 +49,7 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
   const label = isOutput ? "Queried database" : "Query failed"
 
   const body = hasBody ? (
-    <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm">
+    <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm group-open:animate-[slide-down_200ms_ease-out]">
       {isError ? (
         <pre className="overflow-x-auto whitespace-pre-wrap text-red-500">
           {part.errorText}
@@ -64,7 +65,7 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
   ) : null
 
   return (
-    <details className="group my-3">
+    <details className="group my-3" open={hasBody}>
       <summary className="text-muted-foreground flex cursor-pointer list-none items-center gap-1.5 text-sm [&::-webkit-details-marker]:hidden">
         <span>{icon}</span>
         <span>{label}</span>

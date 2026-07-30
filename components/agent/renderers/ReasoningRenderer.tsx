@@ -17,7 +17,7 @@ export default function ReasoningRenderer({ part }: ReasoningRendererProps) {
         <span>Agent thought</span>
         <ChevronDown className="ml-auto inline-block size-4 transition-transform group-open:rotate-180" />
       </summary>
-      <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm whitespace-pre-wrap">
+      <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm whitespace-pre-wrap group-open:animate-[slide-down_200ms_ease-out]">
         {part.text}
       </div>
     </details>
