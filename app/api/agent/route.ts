@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   const agent = getAgent(agentKey)
-  const result = agent.stream(await convertToModelMessages(messages))
+  const result = agent.stream(await convertToModelMessages(messages), { signal: request.signal })
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({
       stream: result.stream,
