@@ -21,7 +21,7 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-3 lg:flex-1">
           <div className="text-muted-foreground text-xs">
-            AI Agent Showcase — powered by Eve + Next.js
+            AI Agent Showcase — powered by Next.js + AI SDK
           </div>
           <div className="hidden lg:ml-auto lg:block">
             <ThemeToggle />

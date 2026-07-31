@@ -1,9 +1,9 @@
 "use client"
 
-import type { EveMessagePart } from "eve/react"
+import type { UIDataTypes, UIMessagePart, UITools } from "ai"
 
 interface TextRendererProps {
-  part: EveMessagePart & { type: "text" }
+  part: UIMessagePart<UIDataTypes, UITools> & { type: "text" }
   isAssistant: boolean
   isStreaming: boolean
   isLastText: boolean

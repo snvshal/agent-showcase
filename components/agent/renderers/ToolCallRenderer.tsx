@@ -1,12 +1,12 @@
 "use client"
 
 import type { ReactNode } from "react"
-import type { EveMessagePart } from "eve/react"
+import type { UIDataTypes, UIMessagePart, UITools } from "ai"
 import { CheckCircle, XCircle, ChevronDown, Loader2 } from "lucide-react"
 import { shimmerTextClass } from "@/components/agent/renderers/LoadingStatus"
 
 export interface ToolCallRendererProps {
-  part: EveMessagePart & { type: "dynamic-tool" }
+  part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" }
 }
 
 export default function ToolCallRenderer({ part }: ToolCallRendererProps) {

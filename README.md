@@ -1,6 +1,6 @@
 # agent-showcase
 
-A collection of AI agent demonstrations built with [Eve](https://eve.vercel.ai) by Vercel, [Next.js](https://nextjs.org), [shadcn/ui](https://ui.shadcn.com), and [Bun](https://bun.sh).
+A collection of AI agent demonstrations built with [Next.js](https://nextjs.org), the [Vercel AI SDK](https://ai-sdk.dev), [shadcn/ui](https://ui.shadcn.com), and [Bun](https://bun.sh).
 
 Each showcase features a different agent use case with real tool calling, streaming responses, and a polished UI.
 
@@ -21,7 +21,7 @@ A read-only financial data analyst agent. Browse income/expense transactions in 
 | ---------------------------------------------- | ------------------------- |
 | [Bun](https://bun.sh)                          | Runtime & package manager |
 | [Next.js 16](https://nextjs.org)               | React framework           |
-| [Eve](https://eve.vercel.ai)                   | Agent framework by Vercel |
+| [Vercel AI SDK](https://ai-sdk.dev)            | Agent runtime & streaming  |
 | [shadcn/ui](https://ui.shadcn.com) (base-nova) | UI components             |
 | [Tailwind CSS v4](https://tailwindcss.com)     | Styling                   |
 | [lucide-react](https://lucide.dev)             | Icons                     |

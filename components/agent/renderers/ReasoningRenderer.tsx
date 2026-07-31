@@ -1,10 +1,10 @@
 "use client"
 
-import type { EveMessagePart } from "eve/react"
+import type { UIDataTypes, UIMessagePart, UITools } from "ai"
 import { Brain, ChevronDown } from "lucide-react"
 
 interface ReasoningRendererProps {
-  part: EveMessagePart & { type: "reasoning" }
+  part: UIMessagePart<UIDataTypes, UITools> & { type: "reasoning" }
 }
 
 export default function ReasoningRenderer({ part }: ReasoningRendererProps) {

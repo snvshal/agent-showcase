@@ -1,6 +1,5 @@
 bun.lock
 .next
 node_modules
-.eve
 .workflow-data
 data

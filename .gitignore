@@ -34,9 +34,6 @@ yarn-error.log*
 .env*
 !.env.example
 
-# eve build artifacts
-.eve/
-
 # generated seed data
 /data/
 

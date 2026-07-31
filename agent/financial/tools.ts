@@ -1,15 +1,12 @@
-import { defineTool } from "eve/tools"
+import { tool } from "ai"
 import { z } from "zod"
-import { searchTransactions } from "../../lib/data"
+import { searchTransactions as runSearch } from "@/lib/data"
 
-export default defineTool({
+export const searchTransactionsTool = tool({
   description:
     "Search and analyze financial transactions. Use filters to narrow results, or use groupBy for aggregate analysis by category, department, or month. When 3+ results match, stats are auto-included.",
   inputSchema: z.object({
-    query: z
-      .string()
-      .optional()
-      .describe("Search term for description and counterparty (LIKE match)"),
+    query: z.string().optional().describe("Search term for description and counterparty (LIKE match)"),
     type: z.enum(["income", "expense"]).optional().describe("Filter by transaction type"),
     category: z
       .string()
@@ -32,7 +29,5 @@ export default defineTool({
     sortOrder: z.enum(["asc", "desc"]).optional().describe("Sort order"),
     limit: z.number().min(1).max(200).optional().describe("Max results to return (default 50)"),
   }),
-  async execute(input) {
-    return searchTransactions(input)
-  },
+  execute: async (params) => runSearch(params),
 })
