@@ -1,8 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef, type ReactNode } from "react"
-import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
 import type { ChatStatus, UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -21,7 +19,12 @@ import ToolCallRenderer from "@/components/agent/renderers/ToolCallRenderer"
 import LoadingStatus from "@/components/agent/renderers/LoadingStatus"
 
 export interface AgentPanelProps {
-  instructionsKey?: string
+  messages: UIMessage[]
+  status: ChatStatus
+  error?: Error | undefined
+  sendMessage: (message: { text: string }) => Promise<void>
+  stop: () => void
+  regenerate: () => Promise<void>
   renderToolCall?: (part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" }) => ReactNode
   placeholder?: string
   emptyTitle?: string
@@ -58,18 +61,18 @@ function getAgentStatus(
 }
 
 export default function AgentPanel({
+  messages,
+  status,
+  error,
+  sendMessage,
+  stop,
+  regenerate,
   renderToolCall,
   placeholder = "Ask about the data...",
   emptyTitle = "Ask the agent about the data",
   emptyHint = 'Try "What were our biggest expenses?" or "Show me income by department"',
   className,
 }: AgentPanelProps) {
-  const { messages, status, error, sendMessage, stop, regenerate } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/agent",
-      body: { agent: "financial" },
-    }),
-  })
   const [input, setInput] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 

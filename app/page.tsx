@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { useChat } from "@ai-sdk/react"
+import { DefaultChatTransport } from "ai"
 import { Receipt, Table2, Bot } from "lucide-react"
 import DataTable from "@/components/DataTable"
 import AgentPanel from "@/components/agent/AgentPanel"
@@ -8,6 +10,12 @@ import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export default function Home() {
   const [tab, setTab] = useState<"data" | "agent">("data")
+  const chat = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/agent",
+      body: { agent: "financial" },
+    }),
+  })
 
   return (
     <div className="flex h-screen flex-col">
@@ -60,7 +68,14 @@ export default function Home() {
           </div>
         ) : (
           <div className="min-h-0 flex-1 overflow-hidden">
-            <AgentPanel />
+            <AgentPanel
+              messages={chat.messages}
+              status={chat.status}
+              error={chat.error}
+              sendMessage={chat.sendMessage}
+              stop={chat.stop}
+              regenerate={chat.regenerate}
+            />
           </div>
         )}
       </div>
@@ -71,7 +86,14 @@ export default function Home() {
           <DataTable />
         </section>
         <section className="flex min-h-0 w-[420px] shrink-0 flex-col overflow-hidden p-4">
-          <AgentPanel />
+          <AgentPanel
+            messages={chat.messages}
+            status={chat.status}
+            error={chat.error}
+            sendMessage={chat.sendMessage}
+            stop={chat.stop}
+            regenerate={chat.regenerate}
+          />
         </section>
       </main>
     </div>
