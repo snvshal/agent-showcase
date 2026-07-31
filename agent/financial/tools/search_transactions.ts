@@ -2,7 +2,7 @@ import { tool } from "ai"
 import { z } from "zod"
 import { searchTransactions as runSearch } from "@/lib/data"
 
-export const searchTransactionsTool = tool({
+export const search_transactions_tool = tool({
   description:
     "Search and analyze financial transactions. Use filters to narrow results, or use groupBy for aggregate analysis by category, department, or month. When 3+ results match, stats are auto-included.",
   inputSchema: z.object({
