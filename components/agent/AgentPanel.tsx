@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, type ReactNode } from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import type { UIDataTypes, UIMessagePart, UITools } from "ai"
+import type { ChatStatus, UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Send, Bot, Square } from "lucide-react"
@@ -29,12 +29,33 @@ export interface AgentPanelProps {
   className?: string
 }
 
-const loadingMessages = [
-  "Understanding your query...",
-  "Analyzing financial data...",
-  "Searching transactions...",
-  "Compiling results...",
-]
+function getAgentStatus(
+  status: ChatStatus,
+  lastMsg: UIMessage | undefined,
+): string | null {
+  if (status === "submitted") return "Waiting for the agent..."
+  if (status !== "streaming") return null
+  if (!lastMsg || lastMsg.role !== "assistant") return null
+
+  for (let i = lastMsg.parts.length - 1; i >= 0; i--) {
+    const part = lastMsg.parts[i]
+    switch (part.type) {
+      case "text":
+        if (part.state === "streaming") return null
+        break
+      case "reasoning":
+        if (part.state === "streaming") return "Analyzing your query..."
+        break
+      case "dynamic-tool":
+        if (part.state === "input-streaming") return "Planning the query..."
+        if (part.state === "input-available") return `Running ${part.toolName}...`
+        if (part.state === "output-available") return "Compiling results..."
+        if (part.state === "output-error") return null
+        break
+    }
+  }
+  return lastMsg.parts.length > 0 ? "Thinking..." : null
+}
 
 export default function AgentPanel({
   renderToolCall,
@@ -50,7 +71,6 @@ export default function AgentPanel({
     }),
   })
   const [input, setInput] = useState("")
-  const [msgTick, setMsgTick] = useState(0)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const isBusy = status === "submitted" || status === "streaming"
@@ -60,19 +80,6 @@ export default function AgentPanel({
       textareaRef.current.style.height = "auto"
     }
   }, [input])
-
-  useEffect(() => {
-    if (!isBusy) return
-    const interval = setInterval(() => {
-      setMsgTick((t) => t + 1)
-    }, 2500)
-    return () => {
-      clearInterval(interval)
-      setMsgTick(0)
-    }
-  }, [isBusy])
-
-  const msgIndex = isBusy ? msgTick % loadingMessages.length : 0
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -115,7 +122,12 @@ export default function AgentPanel({
     }
   }
 
-  const showBusy = isBusy && messages[messages.length - 1]?.role === "user"
+  const lastAssistantMsg =
+    messages[messages.length - 1]?.role === "assistant"
+      ? messages[messages.length - 1]
+      : undefined
+  const isStreamingLastMsg = isBusy && lastAssistantMsg !== undefined
+  const statusText = isBusy ? getAgentStatus(status, lastAssistantMsg) : null
 
   return (
     <Card size="sm" className={`flex h-full min-h-0 flex-col pb-0 ${className ?? ""}`}>
@@ -154,7 +166,6 @@ export default function AgentPanel({
                     )
                     const isLastMsg = msg.id === messages[messages.length - 1]?.id
                     const isStreamingMsg = msg.role === "assistant" && isBusy && isLastMsg
-                    const hasVisibleParts = msg.parts.some((p) => p.type !== "step-start")
 
                     return (
                       <MessageScrollerItem
@@ -172,34 +183,23 @@ export default function AgentPanel({
                           </div>
                         ) : (
                           <div className="text-sm leading-relaxed">
-                            {!hasVisibleParts && isStreamingMsg ? (
-                              <div className="my-3">
-                                <LoadingStatus text={loadingMessages[msgIndex]} />
+                            {msg.parts.map((part, i) =>
+                              renderPart(part, i, true, isStreamingMsg, i === lastTextIndex),
+                            )}
+                            {isStreamingMsg && statusText && (
+                              <div className="mt-2">
+                                <LoadingStatus text={statusText} />
                               </div>
-                            ) : (
-                              <>
-                                {msg.parts.map((part, i) =>
-                                  renderPart(part, i, true, isStreamingMsg, i === lastTextIndex),
-                                )}
-                                {isStreamingMsg && !msg.parts.some((p) => p.type === "text") && (
-                                  <div className="mt-2">
-                                    <LoadingStatus text="Thinking..." />
-                                  </div>
-                                )}
-                              </>
                             )}
                           </div>
                         )}
                       </MessageScrollerItem>
                     )
                   })}
-
-                  {showBusy && (
+                  {statusText && !isStreamingLastMsg && (
                     <MessageScrollerItem>
                       <div className="text-sm leading-relaxed">
-                        <div className="my-3">
-                          <LoadingStatus text={loadingMessages[msgIndex]} />
-                        </div>
+                        <LoadingStatus text={statusText} />
                       </div>
                     </MessageScrollerItem>
                   )}

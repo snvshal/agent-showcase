@@ -3,7 +3,6 @@
 import type { ReactNode } from "react"
 import type { UIDataTypes, UIMessagePart, UITools } from "ai"
 import { CheckCircle, XCircle, ChevronDown, Loader2 } from "lucide-react"
-import { shimmerTextClass } from "@/components/agent/renderers/LoadingStatus"
 
 export interface ToolCallRendererProps {
   part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" }
@@ -22,7 +21,7 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
       <details className="group my-3">
         <summary className="text-muted-foreground flex cursor-pointer list-none items-center gap-1.5 text-sm [&::-webkit-details-marker]:hidden">
           <Loader2 className="size-3.5 animate-spin" />
-          <span className={shimmerTextClass}>Thinking...</span>
+          <span>{part.toolName}</span>
           {hasBody ? (
             <ChevronDown className="ml-auto inline-block size-4 transition-transform group-open:rotate-180" />
           ) : null}
@@ -46,7 +45,7 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
     <XCircle className="size-3.5" />
   )
 
-  const label = isOutput ? "Queried database" : "Query failed"
+  const label = isOutput ? `Queried ${part.toolName}` : `${part.toolName} failed`
 
   const body = hasBody ? (
     <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm group-open:animate-[slide-down_200ms_ease-out]">
