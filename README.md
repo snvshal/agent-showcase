@@ -21,7 +21,7 @@ A read-only financial data analyst agent. Browse income/expense transactions in 
 | ---------------------------------------------- | ------------------------- |
 | [Bun](https://bun.sh)                          | Runtime & package manager |
 | [Next.js 16](https://nextjs.org)               | React framework           |
-| [Vercel AI SDK](https://ai-sdk.dev)            | Agent runtime & streaming  |
+| [Vercel AI SDK](https://ai-sdk.dev)            | Agent runtime & streaming |
 | [shadcn/ui](https://ui.shadcn.com) (base-nova) | UI components             |
 | [Tailwind CSS v4](https://tailwindcss.com)     | Styling                   |
 | [lucide-react](https://lucide.dev)             | Icons                     |
@@ -34,6 +34,17 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+## Configuration
+
+Copy `.env.example` to `.env.local` and add your API keys:
+
+| Variable             | Purpose                                     |
+| -------------------- | ------------------------------------------- |
+| `GROQ_API_KEY`       | Groq API key (fallback model provider)      |
+| `OPENROUTER_API_KEY` | OpenRouter API key (primary model provider) |
+
+Agents route through [OpenRouter](https://openrouter.ai) by default and automatically fall back to Groq if the primary provider request fails (e.g. auth errors, rate limits, or outages).
 
 ## Adding a Showcase
 
