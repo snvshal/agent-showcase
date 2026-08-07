@@ -6,7 +6,10 @@ export const search_transactions_tool = tool({
   description:
     "Search and analyze financial transactions. Use filters to narrow results, or use groupBy for aggregate analysis by category, department, or month. When 3+ results match, stats are auto-included.",
   inputSchema: z.object({
-    query: z.string().optional().describe("Search term for description and counterparty (LIKE match)"),
+    query: z
+      .string()
+      .optional()
+      .describe("Search term for description and counterparty (LIKE match)"),
     type: z.enum(["income", "expense"]).optional().describe("Filter by transaction type"),
     category: z
       .string()

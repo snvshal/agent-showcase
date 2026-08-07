@@ -30,7 +30,10 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
           <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm group-open:animate-[slide-down_200ms_ease-out]">
             <pre className="text-muted-foreground max-h-[200px] overflow-x-auto whitespace-pre-wrap">
               {part.input !== undefined
-                ? (typeof part.input === "string" ? part.input : JSON.stringify(part.input, null, 1)).slice(0, 2000)
+                ? (typeof part.input === "string"
+                    ? part.input
+                    : JSON.stringify(part.input, null, 1)
+                  ).slice(0, 2000)
                 : ""}
             </pre>
           </div>
@@ -50,13 +53,14 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
   const body = hasBody ? (
     <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm group-open:animate-[slide-down_200ms_ease-out]">
       {isError ? (
-        <pre className="overflow-x-auto whitespace-pre-wrap text-red-500">
-          {part.errorText}
-        </pre>
+        <pre className="overflow-x-auto whitespace-pre-wrap text-red-500">{part.errorText}</pre>
       ) : (
         <pre className="text-muted-foreground max-h-[200px] overflow-x-auto whitespace-pre-wrap">
           {part.output !== undefined
-            ? (typeof part.output === "string" ? part.output : JSON.stringify(part.output, null, 1)).slice(0, 2000)
+            ? (typeof part.output === "string"
+                ? part.output
+                : JSON.stringify(part.output, null, 1)
+              ).slice(0, 2000)
             : ""}
         </pre>
       )}

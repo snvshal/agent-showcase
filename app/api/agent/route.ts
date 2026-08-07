@@ -1,4 +1,9 @@
-import { convertToModelMessages, createUIMessageStreamResponse, generateId, toUIMessageStream } from "ai"
+import {
+  convertToModelMessages,
+  createUIMessageStreamResponse,
+  generateId,
+  toUIMessageStream,
+} from "ai"
 import type { UIMessage } from "ai"
 import { getAgent } from "@/agent"
 

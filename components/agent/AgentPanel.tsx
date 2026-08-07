@@ -25,17 +25,16 @@ export interface AgentPanelProps {
   sendMessage: (message: { text: string }) => Promise<void>
   stop: () => void
   regenerate: () => Promise<void>
-  renderToolCall?: (part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" }) => ReactNode
+  renderToolCall?: (
+    part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" },
+  ) => ReactNode
   placeholder?: string
   emptyTitle?: string
   emptyHint?: string
   className?: string
 }
 
-function getAgentStatus(
-  status: ChatStatus,
-  lastMsg: UIMessage | undefined,
-): string | null {
+function getAgentStatus(status: ChatStatus, lastMsg: UIMessage | undefined): string | null {
   if (status === "submitted") return "Waiting for the agent..."
   if (status !== "streaming") return null
   if (!lastMsg || lastMsg.role !== "assistant") return null
@@ -126,9 +125,7 @@ export default function AgentPanel({
   }
 
   const lastAssistantMsg =
-    messages[messages.length - 1]?.role === "assistant"
-      ? messages[messages.length - 1]
-      : undefined
+    messages[messages.length - 1]?.role === "assistant" ? messages[messages.length - 1] : undefined
   const isStreamingLastMsg = isBusy && lastAssistantMsg !== undefined
   const statusText = isBusy ? getAgentStatus(status, lastAssistantMsg) : null
 
@@ -178,7 +175,7 @@ export default function AgentPanel({
                       >
                         {msg.role === "user" ? (
                           <div className="flex justify-end">
-                            <div className="max-w-[80%] rounded-lg bg-muted px-4 py-2.5 text-sm leading-relaxed">
+                            <div className="bg-muted max-w-[80%] rounded-lg px-4 py-2.5 text-sm leading-relaxed">
                               {msg.parts.map((part, i) =>
                                 renderPart(part, i, false, false, i === msg.parts.length - 1),
                               )}
@@ -225,7 +222,7 @@ export default function AgentPanel({
             placeholder={placeholder}
             disabled={isBusy}
             rows={1}
-            className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 disabled:bg-input/50 dark:bg-input/30 dark:disabled:bg-input/80 h-9 min-h-9 max-h-24 w-full min-w-0 resize-none rounded-lg border bg-transparent px-3 py-1.5 text-base transition-colors outline-none focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 disabled:bg-input/50 dark:bg-input/30 dark:disabled:bg-input/80 h-9 max-h-24 min-h-9 w-full min-w-0 resize-none rounded-lg border bg-transparent px-3 py-1.5 text-base transition-colors outline-none focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault()

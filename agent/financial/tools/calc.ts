@@ -171,7 +171,7 @@ class Parser {
     if (tok.type === "lparen") {
       this.next()
       const value = this.expression()
-      if (this.next().type !== "rparen") throw new Error("Expected \")\"")
+      if (this.next().type !== "rparen") throw new Error('Expected ")"')
       return value
     }
 
@@ -200,7 +200,9 @@ class Parser {
       const [minArgs, maxArgs] = FUNCTION_ARITY[name] ?? [NaN, NaN]
       if (Number.isNaN(minArgs)) throw new Error(`Unknown function "${name}"`)
       if (args.length < minArgs || args.length > maxArgs) {
-        throw new Error(`Function "${name}" expects ${minArgs === maxArgs ? minArgs : `${minArgs}-${maxArgs}`} arguments, got ${args.length}`)
+        throw new Error(
+          `Function "${name}" expects ${minArgs === maxArgs ? minArgs : `${minArgs}-${maxArgs}`} arguments, got ${args.length}`,
+        )
       }
 
       switch (name) {

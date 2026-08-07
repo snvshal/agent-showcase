@@ -10,5 +10,8 @@ export function getAgent(key: string | undefined): Agent {
 }
 
 export function listAgents(): { name: string; description?: string }[] {
-  return Object.values(agents).map((agent) => ({ name: agent.name, description: agent.description }))
+  return Object.values(agents).map((agent) => ({
+    name: agent.name,
+    description: agent.description,
+  }))
 }
