@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export default function Home() {
   const [tab, setTab] = useState<"data" | "agent">("data")
+  const [draft, setDraft] = useState("")
   const chat = useChat({
     transport: new DefaultChatTransport({
       api: "/api/agent",
@@ -79,6 +80,8 @@ export default function Home() {
               sendMessage={chat.sendMessage}
               stop={chat.stop}
               regenerate={chat.regenerate}
+              value={draft}
+              onValueChange={setDraft}
             />
           </div>
         )}
@@ -97,6 +100,8 @@ export default function Home() {
             sendMessage={chat.sendMessage}
             stop={chat.stop}
             regenerate={chat.regenerate}
+            value={draft}
+            onValueChange={setDraft}
           />
         </section>
       </main>

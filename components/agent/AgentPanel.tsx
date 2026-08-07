@@ -31,6 +31,8 @@ export interface AgentPanelProps {
   placeholder?: string
   emptyTitle?: string
   emptyHint?: string
+  value?: string
+  onValueChange?: (value: string) => void
   className?: string
 }
 
@@ -70,26 +72,33 @@ export default function AgentPanel({
   placeholder = "Ask about the data...",
   emptyTitle = "Ask the agent about the data",
   emptyHint = 'Try "What were our biggest expenses?" or "Show me income by department"',
+  value,
+  onValueChange,
   className,
 }: AgentPanelProps) {
   const [input, setInput] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  const draft = value ?? input
+  const setDraft = onValueChange ?? setInput
   const isBusy = status === "submitted" || status === "streaming"
 
   useEffect(() => {
-    if (!input && textareaRef.current) {
-      textareaRef.current.style.height = "auto"
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = "auto"
+    if (draft) {
+      el.style.height = `${Math.min(el.scrollHeight, 128)}px`
     }
-  }, [input])
+  }, [draft])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (isBusy) return
 
-    const msg = input.trim()
+    const msg = draft.trim()
     if (!msg) return
-    setInput("")
+    setDraft("")
     sendMessage({ text: msg })
   }
 
@@ -213,8 +222,8 @@ export default function AgentPanel({
         <form onSubmit={handleSubmit} className="flex items-start gap-2 border-t p-3">
           <textarea
             ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
             onInput={(e) => {
               e.currentTarget.style.height = "auto"
               e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 128)}px`
@@ -243,7 +252,7 @@ export default function AgentPanel({
               <Square className="size-4" />
             </Button>
           ) : (
-            <Button type="submit" size="icon-lg" disabled={!input.trim()}>
+            <Button type="submit" size="icon-lg" disabled={!draft.trim()}>
               <Send className="size-4" />
             </Button>
           )}
