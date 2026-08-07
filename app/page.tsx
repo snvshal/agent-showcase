@@ -40,6 +40,8 @@ export default function Home() {
       <div className="flex min-h-0 flex-1 flex-col lg:hidden">
         <div className="flex shrink-0 border-b">
           <button
+            role="tab"
+            aria-selected={tab === "data"}
             onClick={() => setTab("data")}
             className={`flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
               tab === "data"
@@ -51,6 +53,8 @@ export default function Home() {
             Transactions
           </button>
           <button
+            role="tab"
+            aria-selected={tab === "agent"}
             onClick={() => setTab("agent")}
             className={`flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
               tab === "agent"

@@ -21,30 +21,21 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown } from "lucide-react"
-
-interface Transaction {
-  id: number
-  date: string
-  description: string
-  type: "income" | "expense"
-  category: string
-  amount: number
-  department: string
-  payment_method: string
-  counterparty: string
-}
+import type { Transaction } from "@/lib/data"
 
 type SortKey = "date" | "amount"
 type SortDir = "asc" | "desc"
 
 export default function DataTable() {
   const [data, setData] = useState<Transaction[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [reloadKey, setReloadKey] = useState(0)
   const [query, setQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState("")
   const [sortBy, setSortBy] = useState<SortKey>("date")
   const [sortOrder, setSortOrder] = useState<SortDir>("desc")
 
-  const loading = data === null
+  const loading = data === null && error === null
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -56,24 +47,49 @@ export default function DataTable() {
     let cancelled = false
 
     fetch(`/api/transactions?${params}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`Request failed with status ${r.status}`)
+        return r.json()
+      })
       .then((result) => {
-        if (!cancelled) setData(result)
+        if (!cancelled) {
+          setData(result)
+          setError(null)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err))
       })
 
     return () => {
       cancelled = true
       setData(null)
     }
-  }, [query, typeFilter, sortBy, sortOrder])
+  }, [query, typeFilter, sortBy, sortOrder, reloadKey])
+
+  function handleQueryChange(value: string) {
+    setQuery(value)
+    setError(null)
+  }
+
+  function handleTypeChange(value: string) {
+    setTypeFilter(value)
+    setError(null)
+  }
 
   function toggleSort(key: SortKey) {
+    setError(null)
     if (sortBy === key) {
       setSortOrder((o) => (o === "asc" ? "desc" : "asc"))
     } else {
       setSortBy(key)
       setSortOrder("desc")
     }
+  }
+
+  function handleRetry() {
+    setError(null)
+    setReloadKey((k) => k + 1)
   }
 
   function formatCurrency(n: number) {
@@ -89,7 +105,7 @@ export default function DataTable() {
         <Input
           placeholder="Search transactions..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => handleQueryChange(e.target.value)}
           className="flex-1"
         />
         <DropdownMenu>
@@ -104,7 +120,7 @@ export default function DataTable() {
             }
           />
           <DropdownMenuContent align="end">
-            <DropdownMenuRadioGroup value={typeFilter} onValueChange={setTypeFilter}>
+            <DropdownMenuRadioGroup value={typeFilter} onValueChange={handleTypeChange}>
               <DropdownMenuRadioItem value="">All types</DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="income">Income</DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="expense">Expense</DropdownMenuRadioItem>
@@ -119,6 +135,9 @@ export default function DataTable() {
             <TableRow className="bg-background">
               <TableHead
                 className="hover:text-foreground cursor-pointer"
+                aria-sort={
+                  sortBy === "date" ? (sortOrder === "asc" ? "ascending" : "descending") : "none"
+                }
                 onClick={() => toggleSort("date")}
               >
                 Date {sortBy === "date" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
@@ -128,6 +147,9 @@ export default function DataTable() {
               <TableHead>Category</TableHead>
               <TableHead
                 className="hover:text-foreground cursor-pointer text-right"
+                aria-sort={
+                  sortBy === "amount" ? (sortOrder === "asc" ? "ascending" : "descending") : "none"
+                }
                 onClick={() => toggleSort("amount")}
               >
                 Amount {sortBy === "amount" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
@@ -163,7 +185,18 @@ export default function DataTable() {
                   </TableCell>
                 </TableRow>
               ))
-            ) : data.length === 0 ? (
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={7} className="py-8 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-muted-foreground text-sm">{error}</span>
+                    <Button variant="outline" size="sm" onClick={handleRetry}>
+                      Retry
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : !data || data.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-muted-foreground py-8 text-center">
                   No transactions found

@@ -45,13 +45,17 @@ function loadData(): Transaction[] {
   if (cachedData) return cachedData
 
   if (!existsSync(DATA_PATH)) {
-    const dir = DATA_PATH.substring(0, DATA_PATH.lastIndexOf("/"))
-    if (dir && !existsSync(dir)) {
-      mkdirSync(dir, { recursive: true })
-    }
     const data = generateTransactions()
-    writeFileSync(DATA_PATH, JSON.stringify(data, null, 2))
-    console.log(`Generated ${data.length} seed transactions`)
+    try {
+      const dir = DATA_PATH.substring(0, DATA_PATH.lastIndexOf("/"))
+      if (dir && !existsSync(dir)) {
+        mkdirSync(dir, { recursive: true })
+      }
+      writeFileSync(DATA_PATH, JSON.stringify(data, null, 2))
+      console.log(`Generated ${data.length} seed transactions`)
+    } catch (error) {
+      console.warn(`Could not persist seed data to ${DATA_PATH}, continuing in memory`, error)
+    }
     cachedData = data
     return data
   }
@@ -83,13 +87,13 @@ export function getAll(params: {
   const orderCol = params.sortBy === "amount" ? "amount" : "date"
   const orderDir = params.sortOrder === "asc" ? 1 : -1
 
-  data.sort((a, b) => {
+  const sorted = [...data].sort((a, b) => {
     if (orderCol === "amount") return (a.amount - b.amount) * orderDir
     return a.date.localeCompare(b.date) * orderDir
   })
 
   const limit = params.limit ?? 500
-  return data.slice(0, limit)
+  return sorted.slice(0, limit)
 }
 
 export function searchTransactions(params: SearchParams): {
@@ -121,15 +125,15 @@ export function searchTransactions(params: SearchParams): {
   const total = data.length
 
   const orderCol = params.sortBy === "amount" ? "amount" : "date"
-  const orderDir = params.sortOrder === "desc" ? -1 : 1
+  const orderDir = params.sortOrder === "asc" ? 1 : -1
 
-  data.sort((a, b) => {
+  const sorted = [...data].sort((a, b) => {
     if (orderCol === "amount") return (a.amount - b.amount) * orderDir
     return a.date.localeCompare(b.date) * orderDir
   })
 
   const limit = params.limit ?? 50
-  const transactions = data.slice(0, limit)
+  const transactions = sorted.slice(0, limit)
 
   let stats: StatsResult | undefined
   let breakdown: { label: string; income: number; expense: number; count: number }[] | undefined

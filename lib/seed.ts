@@ -1,15 +1,4 @@
-export interface Transaction {
-  id: number
-  date: string
-  description: string
-  type: "income" | "expense"
-  category: string
-  amount: number
-  department: string
-  payment_method: string
-  counterparty: string
-  notes: string
-}
+import type { Transaction } from "./data"
 
 const departments = ["Engineering", "Sales", "Marketing", "Operations", "HR", "Finance"]
 const paymentMethods = ["Bank Transfer", "Credit Card", "ACH", "Check", "Wire Transfer"]

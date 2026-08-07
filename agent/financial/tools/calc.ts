@@ -226,9 +226,11 @@ class Parser {
         case "round": {
           const dp = args[1] ?? 0
           const factor = 10 ** dp
-          return Math.round(args[0] * factor) / factor
+          const epsilon = args[0] >= 0 ? Number.EPSILON : -Number.EPSILON
+          return Math.round((args[0] + epsilon) * factor) / factor
         }
         case "sqrt":
+          if (args[0] < 0) throw new Error("Cannot take the square root of a negative number")
           return Math.sqrt(args[0])
         case "sum":
           return args.reduce((s, n) => s + n, 0)
