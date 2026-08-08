@@ -37,6 +37,9 @@ yarn-error.log*
 # generated seed data
 /data/
 
+# runtime-generated PDFs
+/public/generated/
+
 # vercel
 .vercel
 

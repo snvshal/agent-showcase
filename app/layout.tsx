@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Agent Showcase",
   description:
-    "A collection of AI agent demonstrations — ask an agent to explore income and expense transactions.",
+    "A collection of AI agent demonstrations — analyze transactions or generate PDF documents on demand.",
 }
 
 export default function RootLayout({

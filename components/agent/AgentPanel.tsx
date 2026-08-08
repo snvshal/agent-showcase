@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef, type ReactNode } from "react"
 import type { ChatStatus, UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent, CardAction } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Send, Bot, Square } from "lucide-react"
+import { Plus, Send, Bot, Square } from "lucide-react"
 import {
   MessageScrollerProvider,
   MessageScroller,
@@ -25,12 +25,14 @@ export interface AgentPanelProps {
   sendMessage: (message: { text: string }) => Promise<void>
   stop: () => void
   regenerate: () => Promise<void>
+  onNewChat?: () => void
   renderToolCall?: (
     part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" },
   ) => ReactNode
   placeholder?: string
   emptyTitle?: string
   emptyHint?: string
+  suggestions?: string[]
   value?: string
   onValueChange?: (value: string) => void
   className?: string
@@ -68,10 +70,12 @@ export default function AgentPanel({
   sendMessage,
   stop,
   regenerate,
+  onNewChat,
   renderToolCall,
   placeholder = "Ask about the data...",
   emptyTitle = "Ask the agent about the data",
   emptyHint = 'Try "What were our biggest expenses?" or "Show me income by department"',
+  suggestions,
   value,
   onValueChange,
   className,
@@ -142,6 +146,14 @@ export default function AgentPanel({
     <Card size="sm" className={`flex h-full min-h-0 flex-col pb-0 ${className ?? ""}`}>
       <CardHeader>
         <CardTitle>Agent Chat</CardTitle>
+        <CardAction className="h-7">
+          {onNewChat && messages.length > 0 && (
+            <Button type="button" variant="outline" size="sm" onClick={onNewChat}>
+              <Plus className="size-3.5" />
+              New chat
+            </Button>
+          )}
+        </CardAction>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
         {status === "error" && error && (
@@ -158,10 +170,29 @@ export default function AgentPanel({
           </div>
         )}
         {messages.length === 0 ? (
-          <div className="text-muted-foreground flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-4 py-12 text-center">
-            <Bot className="text-muted-foreground size-8" />
-            <p className="text-sm font-medium">{emptyTitle}</p>
-            <p className="max-w-[240px] text-xs">{emptyHint}</p>
+          <div className="flex min-h-0 flex-1 flex-col px-4 pb-4">
+            <div className="text-muted-foreground flex min-h-0 flex-1 flex-col items-center justify-center gap-2 py-12 text-center">
+              <Bot className="text-muted-foreground size-8" />
+              <p className="text-sm font-medium">{emptyTitle}</p>
+              <p className="max-w-[240px] text-xs">{emptyHint}</p>
+            </div>
+            {suggestions && suggestions.length > 0 && (
+              <div className="flex w-full flex-col items-stretch gap-2">
+                {suggestions.map((suggestion) => (
+                  <Button
+                    key={suggestion}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isBusy}
+                    onClick={() => sendMessage({ text: suggestion })}
+                    className="text-muted-foreground h-auto whitespace-normal px-3 py-2 text-left"
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <MessageScrollerProvider autoScroll scrollPreviousItemPeek={64}>

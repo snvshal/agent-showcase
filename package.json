@@ -15,6 +15,7 @@
     "@ai-sdk/react": "^4.0.47",
     "@base-ui/react": "^1.6.0",
     "@openrouter/ai-sdk-provider": "^3.0.0",
+    "@react-pdf/renderer": "^4.5.1",
     "@shadcn/react": "^0.2.1",
     "ai": "^7.0.34",
     "class-variance-authority": "^0.7.1",
