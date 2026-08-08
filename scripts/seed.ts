@@ -1,8 +1,11 @@
 import { generateTransactions } from "../lib/seed"
 import { writeFileSync, existsSync, mkdirSync, readFileSync } from "fs"
+import path from "node:path"
 
-const dataDir = process.env.DATA_PATH ?? "data/transactions.json"
-const dir = dataDir.substring(0, dataDir.lastIndexOf("/"))
+const dataDir = process.env.DATA_PATH
+  ? path.resolve(process.env.DATA_PATH)
+  : path.join(process.cwd(), "data", "transactions.json")
+const dir = path.dirname(dataDir)
 if (dir && !existsSync(dir)) {
   mkdirSync(dir, { recursive: true })
 }

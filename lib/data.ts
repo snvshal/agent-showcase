@@ -1,4 +1,5 @@
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from "fs"
+import path from "node:path"
 import { generateTransactions } from "./seed"
 
 export interface Transaction {
@@ -37,7 +38,9 @@ export interface StatsResult {
   count: number
 }
 
-const DATA_PATH = process.env.DATA_PATH ?? "data/transactions.json"
+const DATA_PATH = process.env.DATA_PATH
+  ? path.resolve(process.env.DATA_PATH)
+  : path.join(process.cwd(), "data", "transactions.json")
 
 let cachedData: Transaction[] | null = null
 
@@ -47,7 +50,7 @@ function loadData(): Transaction[] {
   if (!existsSync(DATA_PATH)) {
     const data = generateTransactions()
     try {
-      const dir = DATA_PATH.substring(0, DATA_PATH.lastIndexOf("/"))
+      const dir = path.dirname(DATA_PATH)
       if (dir && !existsSync(dir)) {
         mkdirSync(dir, { recursive: true })
       }
