@@ -3,6 +3,7 @@
 import { FileText } from "lucide-react"
 import type { UIDataTypes, UIMessagePart, UITools } from "ai"
 import ToolCallRenderer from "@/components/agent/renderers/ToolCallRenderer"
+import { objectUrlForPart } from "@/components/agent/pdfObjectUrl"
 
 interface PdfResultRendererProps {
   part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" }
@@ -10,20 +11,12 @@ interface PdfResultRendererProps {
   onSelect?: (url: string) => void
 }
 
-function parseResult(output: unknown): { url: string; filename?: string } | null {
-  if (typeof output !== "object" || output === null) return null
-  const { url, filename } = output as { url?: unknown; filename?: unknown }
-  return typeof url === "string" && url.length > 0
-    ? { url, filename: typeof filename === "string" ? filename : undefined }
-    : null
-}
-
 export default function PdfResultRenderer({
   part,
   selected = false,
   onSelect,
 }: PdfResultRendererProps) {
-  const result = part.state === "output-available" ? parseResult(part.output) : null
+  const result = objectUrlForPart(part)
 
   if (!result) {
     return <ToolCallRenderer part={part} />

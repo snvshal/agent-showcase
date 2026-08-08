@@ -7,6 +7,7 @@ import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
 import { Bot, ExternalLink, Eye, FileText } from "lucide-react"
 import AgentPanel from "@/components/agent/AgentPanel"
 import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
+import { objectUrlForPart, revokePdfObjectUrls } from "@/components/agent/pdfObjectUrl"
 import PdfResultRenderer from "@/components/agent/renderers/PdfResultRenderer"
 import BackLink from "@/components/BackLink"
 import { Button } from "@/components/ui/button"
@@ -21,9 +22,7 @@ const EXAMPLES = [
 function getPdfUrl(
   part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" },
 ): string | null {
-  if (part.state !== "output-available") return null
-  const output = part.output as { url?: unknown }
-  return typeof output?.url === "string" && output.url.length > 0 ? output.url : null
+  return objectUrlForPart(part)?.url ?? null
 }
 
 function getLatestPdfUrl(messages: UIMessage[]): string | null {
@@ -106,6 +105,7 @@ export default function PdfPage() {
 
   const handleNewChat = () => {
     chat.stop()
+    revokePdfObjectUrls()
     chat.setMessages([])
     setDraft("")
   }

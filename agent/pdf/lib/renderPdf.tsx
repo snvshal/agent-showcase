@@ -1,6 +1,3 @@
-import { randomUUID } from "node:crypto"
-import { mkdir, writeFile } from "node:fs/promises"
-import path from "node:path"
 import { Document, Page, StyleSheet, Text, View, renderToBuffer } from "@react-pdf/renderer"
 
 export interface PdfTable {
@@ -166,15 +163,7 @@ function sanitizeFilename(title: string): string {
   return `${slug || "document"}.pdf`
 }
 
-export async function renderPdf(spec: PdfDocumentSpec): Promise<{ url: string; filename: string }> {
+export async function renderPdf(spec: PdfDocumentSpec): Promise<{ pdf: string; filename: string }> {
   const buffer = await renderToBuffer(buildDocument(spec))
-
-  const base = sanitizeFilename(spec.title).replace(/\.pdf$/, "")
-  const id = randomUUID()
-  const stored = `${base}-${id}.pdf`
-  const dir = path.join(process.cwd(), "public", "generated")
-  await mkdir(dir, { recursive: true })
-  await writeFile(path.join(dir, stored), buffer)
-
-  return { url: `/generated/${stored}`, filename: `${base}.pdf` }
+  return { pdf: buffer.toString("base64"), filename: sanitizeFilename(spec.title) }
 }

@@ -23,7 +23,7 @@ const sectionSchema = z.object({
 
 export const generate_pdf_tool = dynamicTool({
   description:
-    "Generate a professionally formatted PDF document from a structured specification and save it to the public folder. Use this when the user asks to create, write, or generate any document, PDF, resume, report, contract, letter, or handout. Returns a URL to download the generated file.",
+    "Generate a professionally formatted PDF document from a structured specification and return its contents to be shown in the UI. Use this when the user asks to create, write, or generate any document, PDF, resume, report, contract, letter, or handout. Returns the document data and a filename for the generated file.",
   inputSchema: z.object({
     title: z.string().describe("Document title, shown large at the top"),
     subtitle: z.string().optional().describe("Short subtitle under the title"),
