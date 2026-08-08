@@ -54,8 +54,8 @@ export default function PdfResultRenderer({
       type="button"
       onClick={() => onSelect(result.url)}
       aria-pressed={selected}
-      className={`${boxClassName} w-full cursor-pointer text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 hover:bg-muted/50 ${
-        selected ? "border-primary/60 bg-muted/50 ring-2 ring-primary/20" : ""
+      className={`${boxClassName} focus-visible:ring-ring/50 hover:bg-muted/50 w-full cursor-pointer text-left transition-colors outline-none focus-visible:ring-3 ${
+        selected ? "border-primary/60 bg-muted/50 ring-primary/20 ring-2" : ""
       }`}
     >
       {content}

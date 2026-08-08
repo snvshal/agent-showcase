@@ -186,7 +186,7 @@ export default function AgentPanel({
                     size="sm"
                     disabled={isBusy}
                     onClick={() => sendMessage({ text: suggestion })}
-                    className="text-muted-foreground h-auto whitespace-normal px-3 py-2 text-left"
+                    className="text-muted-foreground h-auto px-3 py-2 text-left whitespace-normal"
                   >
                     {suggestion}
                   </Button>

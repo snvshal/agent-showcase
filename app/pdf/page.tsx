@@ -6,6 +6,7 @@ import { DefaultChatTransport } from "ai"
 import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
 import { Bot, ExternalLink, Eye, FileText } from "lucide-react"
 import AgentPanel from "@/components/agent/AgentPanel"
+import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
 import PdfResultRenderer from "@/components/agent/renderers/PdfResultRenderer"
 import BackLink from "@/components/BackLink"
 import { Button } from "@/components/ui/button"
@@ -60,11 +61,7 @@ function PdfViewer({ url }: { url: string | null }) {
       </div>
       {url ? (
         <div className="border-border flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border">
-          <iframe
-            src={url}
-            title="Generated PDF preview"
-            className="min-h-0 w-full flex-1"
-          />
+          <iframe src={url} title="Generated PDF preview" className="min-h-0 w-full flex-1" />
         </div>
       ) : (
         <div className="text-muted-foreground flex min-h-0 flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8 text-center">
@@ -102,6 +99,11 @@ export default function PdfPage() {
 
   const viewerUrl = selectedUrl ?? latestUrl
 
+  const handleStop = () => {
+    chat.stop()
+    chat.setMessages(finalizeAbortedParts(chat.messages))
+  }
+
   const handleNewChat = () => {
     chat.stop()
     chat.setMessages([])
@@ -114,7 +116,7 @@ export default function PdfPage() {
       status={chat.status}
       error={chat.error}
       sendMessage={chat.sendMessage}
-      stop={chat.stop}
+      stop={handleStop}
       regenerate={chat.regenerate}
       onNewChat={handleNewChat}
       value={draft}

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react"
 import type { UIDataTypes, UIMessagePart, UITools } from "ai"
 import { CheckCircle, XCircle, ChevronDown, Loader2 } from "lucide-react"
+import { ABORT_ERROR } from "@/components/agent/finalizeAbortedParts"
 
 export interface ToolCallRendererProps {
   part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" }
@@ -48,12 +49,23 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
     <XCircle className="size-3.5" />
   )
 
-  const label = isOutput ? `Queried ${part.toolName}` : `${part.toolName} failed`
+  const isStopped = isError && part.errorText === ABORT_ERROR
+  const label = isOutput
+    ? `Queried ${part.toolName}`
+    : isStopped
+      ? `${part.toolName} stopped`
+      : `${part.toolName} failed`
 
   const body = hasBody ? (
     <div className="bg-background/50 mt-1.5 rounded-lg border p-2 font-mono text-sm group-open:animate-[slide-down_200ms_ease-out]">
       {isError ? (
-        <pre className="overflow-x-auto whitespace-pre-wrap text-red-500">{part.errorText}</pre>
+        <pre
+          className={`overflow-x-auto whitespace-pre-wrap ${
+            isStopped ? "text-muted-foreground" : "text-red-500"
+          }`}
+        >
+          {part.errorText}
+        </pre>
       ) : (
         <pre className="text-muted-foreground max-h-[200px] overflow-x-auto whitespace-pre-wrap">
           {part.output !== undefined

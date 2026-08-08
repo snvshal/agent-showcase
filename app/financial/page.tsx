@@ -6,6 +6,7 @@ import { DefaultChatTransport } from "ai"
 import { Receipt, Table2, Bot } from "lucide-react"
 import DataTable from "@/components/DataTable"
 import AgentPanel from "@/components/agent/AgentPanel"
+import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
 import BackLink from "@/components/BackLink"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
@@ -24,6 +25,11 @@ export default function Home() {
       body: { agent: "financial" },
     }),
   })
+
+  const handleStop = () => {
+    chat.stop()
+    chat.setMessages(finalizeAbortedParts(chat.messages))
+  }
 
   const handleNewChat = () => {
     chat.stop()
@@ -89,7 +95,7 @@ export default function Home() {
               status={chat.status}
               error={chat.error}
               sendMessage={chat.sendMessage}
-              stop={chat.stop}
+              stop={handleStop}
               regenerate={chat.regenerate}
               onNewChat={handleNewChat}
               value={draft}
@@ -113,7 +119,7 @@ export default function Home() {
             status={chat.status}
             error={chat.error}
             sendMessage={chat.sendMessage}
-            stop={chat.stop}
+            stop={handleStop}
             regenerate={chat.regenerate}
             onNewChat={handleNewChat}
             value={draft}

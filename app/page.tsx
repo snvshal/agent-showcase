@@ -30,9 +30,9 @@ export default function Home() {
               <Link
                 key={showcase.href}
                 href={showcase.href}
-                className="group outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded-xl"
+                className="group focus-visible:ring-ring/50 rounded-xl outline-none focus-visible:ring-3"
               >
-                <Card className="h-full transition-all group-hover:-translate-y-0.5 group-hover:ring-foreground/20 group-focus-visible:ring-foreground/30">
+                <Card className="group-hover:ring-foreground/20 group-focus-visible:ring-foreground/30 h-full transition-all group-hover:-translate-y-0.5">
                   <CardHeader>
                     <div
                       className={`flex size-10 items-center justify-center rounded-lg ${showcase.accent}`}
