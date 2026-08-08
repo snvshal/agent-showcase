@@ -19,7 +19,7 @@ export default function TextRenderer({
     <span className="whitespace-pre-wrap">
       {part.text}
       {isAssistant && isLastText && isStreaming && (
-        <span className="bg-foreground/50 ml-0.5 inline-block h-4 w-1.5 animate-pulse rounded-sm align-text-bottom" />
+        <span className="bg-foreground/50 ml-0.5 inline-block h-4 w-2 animate-pulse rounded-sm align-text-bottom" />
       )}
     </span>
   )
