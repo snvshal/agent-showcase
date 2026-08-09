@@ -1,4 +1,4 @@
-import { FileText, Receipt, type LucideIcon } from "lucide-react"
+import { FileText, Palette, Receipt, type LucideIcon } from "lucide-react"
 
 export interface ShowcaseMeta {
   key: string
@@ -30,5 +30,15 @@ export const SHOWCASES: ShowcaseMeta[] = [
       "Describe any document — resume, report, contract, or letter — and the agent drafts the content and renders a downloadable PDF.",
     icon: FileText,
     accent: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  },
+  {
+    key: "design",
+    href: "/design",
+    label: "Design Generator",
+    title: "Design Generator",
+    description:
+      "Ask for a social post, banner, flyer, or quote card — and the agent plans the layout and renders a downloadable vector graphic.",
+    icon: Palette,
+    accent: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
   },
 ]
