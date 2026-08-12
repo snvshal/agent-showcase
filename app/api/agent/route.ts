@@ -50,6 +50,12 @@ export async function POST(request: Request) {
       tools: agent.tools,
       originalMessages: history,
       generateMessageId: generateId,
+      messageMetadata: ({ part }) => {
+        if (part.type === "finish") {
+          return { usage: part.totalUsage }
+        }
+        return undefined
+      },
     }),
   })
 }

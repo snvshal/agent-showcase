@@ -17,6 +17,7 @@ import TextRenderer from "@/components/agent/renderers/TextRenderer"
 import ReasoningRenderer from "@/components/agent/renderers/ReasoningRenderer"
 import ToolCallRenderer from "@/components/agent/renderers/ToolCallRenderer"
 import LoadingStatus from "@/components/agent/renderers/LoadingStatus"
+import TokenUsageBadge, { type TokenUsage } from "@/components/agent/renderers/TokenUsageBadge"
 
 export interface AgentPanelProps {
   messages: UIMessage[]
@@ -231,6 +232,15 @@ export default function AgentPanel({
                                 <LoadingStatus text={statusText} />
                               </div>
                             )}
+                            {(() => {
+                              const usage = (msg.metadata as { usage?: TokenUsage } | undefined)
+                                ?.usage
+                              return usage ? (
+                                <div className="mt-2 flex justify-start">
+                                  <TokenUsageBadge usage={usage} />
+                                </div>
+                              ) : null
+                            })()}
                           </div>
                         )}
                       </MessageScrollerItem>
