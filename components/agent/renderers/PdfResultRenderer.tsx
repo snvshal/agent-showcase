@@ -2,7 +2,6 @@
 
 import { FileText } from "lucide-react"
 import type { UIDataTypes, UIMessagePart, UITools } from "ai"
-import ToolCallRenderer from "@/components/agent/renderers/ToolCallRenderer"
 import { objectUrlForPart } from "@/components/agent/pdfObjectUrl"
 
 interface PdfResultRendererProps {
@@ -19,7 +18,7 @@ export default function PdfResultRenderer({
   const result = objectUrlForPart(part)
 
   if (!result) {
-    return <ToolCallRenderer part={part} />
+    return null
   }
 
   const content = (

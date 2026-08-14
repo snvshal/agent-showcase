@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import type { UIDataTypes, UIMessagePart, UITools } from "ai"
-import ToolCallRenderer from "@/components/agent/renderers/ToolCallRenderer"
 import { designUrlForPart } from "@/components/agent/designObjectUrl"
 
 interface DesignResultRendererProps {
@@ -19,7 +18,7 @@ export default function DesignResultRenderer({
   const result = designUrlForPart(part)
 
   if (!result) {
-    return <ToolCallRenderer part={part} />
+    return null
   }
 
   const content = (

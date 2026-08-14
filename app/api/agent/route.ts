@@ -41,6 +41,7 @@ export async function POST(request: Request) {
   }
 
   const agent = getAgent(agentKey)
+  const startTime = Date.now()
   const result = agent.stream(await convertToModelMessages(history), {
     signal: request.signal,
   })
@@ -52,7 +53,10 @@ export async function POST(request: Request) {
       generateMessageId: generateId,
       messageMetadata: ({ part }) => {
         if (part.type === "finish") {
-          return { usage: part.totalUsage }
+          return {
+            usage: part.totalUsage,
+            elapsedMs: Date.now() - startTime,
+          }
         }
         return undefined
       },

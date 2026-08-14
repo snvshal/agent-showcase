@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import {
   Table,
   TableBody,
@@ -26,7 +26,7 @@ import type { Transaction } from "@/lib/data"
 type SortKey = "date" | "amount"
 type SortDir = "asc" | "desc"
 
-export default function DataTable() {
+export default memo(function DataTable() {
   const [data, setData] = useState<Transaction[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
@@ -247,4 +247,4 @@ export default function DataTable() {
       </div>
     </div>
   )
-}
+})
