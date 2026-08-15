@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, type ReactNode } from "react"
 import type { ChatStatus, UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
+import { isDynamicToolUIPart, isToolUIPart } from "ai"
 import { Card, CardHeader, CardTitle, CardContent, CardAction } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Send, Bot, Square } from "lucide-react"
@@ -17,6 +18,8 @@ import TextRenderer from "@/components/agent/renderers/TextRenderer"
 import ReasoningRenderer from "@/components/agent/renderers/ReasoningRenderer"
 import ToolCallRenderer from "@/components/agent/renderers/ToolCallRenderer"
 import LoadingStatus from "@/components/agent/renderers/LoadingStatus"
+import TokenUsageBadge, { type TokenUsage } from "@/components/agent/renderers/TokenUsageBadge"
+import MessageDuration from "@/components/agent/renderers/MessageDuration"
 
 export interface AgentPanelProps {
   messages: UIMessage[]
@@ -39,28 +42,17 @@ export interface AgentPanelProps {
 }
 
 function getAgentStatus(status: ChatStatus, lastMsg: UIMessage | undefined): string | null {
-  if (status === "submitted") return "Waiting for the agent..."
+  if (status === "submitted") return "Working on your request"
   if (status !== "streaming") return null
   if (!lastMsg || lastMsg.role !== "assistant") return null
 
   for (let i = lastMsg.parts.length - 1; i >= 0; i--) {
     const part = lastMsg.parts[i]
-    switch (part.type) {
-      case "text":
-        if (part.state === "streaming") return null
-        break
-      case "reasoning":
-        if (part.state === "streaming") return "Analyzing your query..."
-        break
-      case "dynamic-tool":
-        if (part.state === "input-streaming") return "Planning the query..."
-        if (part.state === "input-available") return `Running ${part.toolName}...`
-        if (part.state === "output-available") return "Compiling results..."
-        if (part.state === "output-error") return null
-        break
+    if (part.type === "text" && part.state === "streaming") {
+      return null
     }
   }
-  return lastMsg.parts.length > 0 ? "Thinking..." : null
+  return "Working on your request"
 }
 
 export default function AgentPanel({
@@ -110,28 +102,30 @@ export default function AgentPanel({
     part: UIMessagePart<UIDataTypes, UITools>,
     i: number,
     isAssistant: boolean,
-    isStreaming: boolean,
     isLastText: boolean,
   ) {
+    if (isDynamicToolUIPart(part)) {
+      return (
+        <div key={i}>
+          <ToolCallRenderer part={part} />
+          {renderToolCall ? renderToolCall(part) : null}
+        </div>
+      )
+    }
+    if (isToolUIPart(part)) {
+      return (
+        <div key={i}>
+          <ToolCallRenderer part={part} />
+        </div>
+      )
+    }
     switch (part.type) {
       case "text":
         return (
-          <TextRenderer
-            key={i}
-            part={part}
-            isAssistant={isAssistant}
-            isStreaming={isStreaming}
-            isLastText={isLastText}
-          />
+          <TextRenderer key={i} part={part} isAssistant={isAssistant} isLastText={isLastText} />
         )
       case "reasoning":
         return <ReasoningRenderer key={i} part={part} />
-      case "dynamic-tool":
-        return renderToolCall ? (
-          <div key={i}>{renderToolCall(part)}</div>
-        ) : (
-          <ToolCallRenderer key={i} part={part} />
-        )
       default:
         return null
     }
@@ -217,20 +211,33 @@ export default function AgentPanel({
                           <div className="flex justify-end">
                             <div className="bg-muted max-w-[80%] rounded-lg px-4 py-2.5 text-sm leading-relaxed">
                               {msg.parts.map((part, i) =>
-                                renderPart(part, i, false, false, i === msg.parts.length - 1),
+                                renderPart(part, i, false, i === msg.parts.length - 1),
                               )}
                             </div>
                           </div>
                         ) : (
                           <div className="text-sm leading-relaxed">
                             {msg.parts.map((part, i) =>
-                              renderPart(part, i, true, isStreamingMsg, i === lastTextIndex),
+                              renderPart(part, i, true, i === lastTextIndex),
                             )}
                             {isStreamingMsg && statusText && (
                               <div className="mt-2">
-                                <LoadingStatus text={statusText} />
+                                <LoadingStatus text={statusText} showElapsed />
                               </div>
                             )}
+                            {(() => {
+                              const meta = msg.metadata as
+                                { usage?: TokenUsage; elapsedMs?: number } | undefined
+                              const duration = meta?.elapsedMs
+                              const usage = meta?.usage
+                              if (duration === undefined && !usage) return null
+                              return (
+                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                  {usage && <TokenUsageBadge usage={usage} />}
+                                  {duration !== undefined && <MessageDuration ms={duration} />}
+                                </div>
+                              )
+                            })()}
                           </div>
                         )}
                       </MessageScrollerItem>
@@ -239,7 +246,7 @@ export default function AgentPanel({
                   {statusText && !isStreamingLastMsg && (
                     <MessageScrollerItem>
                       <div className="text-sm leading-relaxed">
-                        <LoadingStatus text={statusText} />
+                        <LoadingStatus text={statusText} showElapsed />
                       </div>
                     </MessageScrollerItem>
                   )}

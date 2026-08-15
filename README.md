@@ -10,6 +10,7 @@ The home page (`/`) is a hub that lists every showcase as a card. Each agent has
 
 - **`/financial`** — Financial Transactions Agent
 - **`/pdf`** — PDF Generator Agent
+- **`/design`** — Design Generator Agent
 
 ### Financial Transactions Agent
 
@@ -25,9 +26,18 @@ A read-only financial data analyst agent. Browse income/expense transactions in 
 Ask for any document — a resume, report, contract, or letter — and the agent drafts the content and renders it into a downloadable PDF file.
 
 - **Tool**: Single `generate_pdf` tool taking a structured document spec (title, author, sections with paragraphs, bullets, and tables)
-- **Rendering**: `@react-pdf/renderer` renders the spec to a styled A4 PDF, saved to `public/generated/`
+- **Rendering**: `@react-pdf/renderer` renders the spec to a styled A4 PDF, returned as base64 in the tool result and shown/downloaded in the browser via an in-memory blob URL — nothing is written to disk
 - **UI**: Dedicated `/pdf` showcase with example prompts and a custom tool-call renderer showing a Download card when the PDF is ready
 - **Features**: Streaming responses, visible tool calls, scoped document-writing persona
+
+### Design Generator Agent
+
+Ask for any graphic — a social media post, banner, flyer, or quote card — and the agent plans the layout, palette, and typography, then renders a downloadable vector image.
+
+- **Tool**: Single `generate_design` tool taking a structured design spec (canvas size, solid or gradient background, title/subtitle/footer text layers, decorative shapes)
+- **Rendering**: A server-side SVG renderer builds a sanitized, responsive vector graphic from the spec, returned in the tool result and rendered in-memory as a data URL (no image-gen API required, nothing written to disk)
+- **UI**: Dedicated `/design` showcase with example prompts and a preview pane showing the latest design with Download/Open buttons
+- **Features**: Streaming responses, visible tool calls, scoped graphic-design persona
 
 ## Tech Stack
 
