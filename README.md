@@ -11,6 +11,7 @@ The home page (`/`) is a hub that lists every showcase as a card. Each agent has
 - **`/financial`** — Financial Transactions Agent
 - **`/pdf`** — PDF Generator Agent
 - **`/design`** — Design Generator Agent
+- **`/search`** — Web Search Agent
 
 ### Financial Transactions Agent
 
@@ -38,6 +39,15 @@ Ask for any graphic — a social media post, banner, flyer, or quote card — an
 - **Rendering**: A server-side SVG renderer builds a sanitized, responsive vector graphic from the spec, returned in the tool result and rendered in-memory as a data URL (no image-gen API required, nothing written to disk)
 - **UI**: Dedicated `/design` showcase with example prompts and a preview pane showing the latest design with Download/Open buttons
 - **Features**: Streaming responses, visible tool calls, scoped graphic-design persona
+
+### Web Search Agent
+
+Ask anything — news, specs, prices, comparisons — and the agent searches the live web and answers with cited sources.
+
+- **Tool**: Single `search_web` tool backed by the [Exa](https://exa.ai) API (free tier: $20 on signup plus $10 in credits monthly), taking a query plus optional result count and depth
+- **Data**: Results are cached in-memory for 5 minutes to avoid duplicate calls; results carry title, URL, and a snippet built from Exa highlights
+- **UI**: Dedicated `/search` showcase (two-pane layout with sources panel and agent chat) featuring inline `[n]` citation links with hover popovers and a sources sidebar
+- **Features**: Streaming responses, visible tool calls, scoped research persona that refuses to answer from memory alone
 
 ## Tech Stack
 
@@ -67,6 +77,7 @@ Copy `.env.example` to `.env.local` and add your API keys:
 | -------------------- | ------------------------------------------- |
 | `GROQ_API_KEY`       | Groq API key (fallback model provider)      |
 | `OPENROUTER_API_KEY` | OpenRouter API key (primary model provider) |
+| `EXA_API_KEY`        | Exa key for the Web Search agent            |
 
 Agents route through [OpenRouter](https://openrouter.ai) by default and automatically fall back to Groq if the primary provider request fails (e.g. auth errors, rate limits, or outages).
 

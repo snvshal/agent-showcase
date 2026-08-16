@@ -2,11 +2,13 @@ import type { Agent } from "@/agent/core/Agent"
 import { financialAgent } from "@/agent/financial/agent"
 import { pdfAgent } from "@/agent/pdf/agent"
 import { designAgent } from "@/agent/design/agent"
+import { searchAgent } from "@/agent/search/agent"
 
 const agents: Record<string, Agent> = {
   financial: financialAgent,
   pdf: pdfAgent,
   design: designAgent,
+  search: searchAgent,
 }
 
 export function getAgent(key: string | undefined): Agent {
