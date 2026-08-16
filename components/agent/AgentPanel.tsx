@@ -20,6 +20,7 @@ import ToolCallRenderer from "@/components/agent/renderers/ToolCallRenderer"
 import LoadingStatus from "@/components/agent/renderers/LoadingStatus"
 import TokenUsageBadge, { type TokenUsage } from "@/components/agent/renderers/TokenUsageBadge"
 import MessageDuration from "@/components/agent/renderers/MessageDuration"
+import type { CitationSource } from "@/components/agent/citations"
 
 export interface AgentPanelProps {
   messages: UIMessage[]
@@ -32,6 +33,8 @@ export interface AgentPanelProps {
   renderToolCall?: (
     part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" },
   ) => ReactNode
+  getCitationSources?: (message: UIMessage) => CitationSource[]
+  renderAssistantFooter?: (message: UIMessage) => ReactNode
   placeholder?: string
   emptyTitle?: string
   emptyHint?: string
@@ -64,6 +67,8 @@ export default function AgentPanel({
   regenerate,
   onNewChat,
   renderToolCall,
+  getCitationSources,
+  renderAssistantFooter,
   placeholder = "Ask about the data...",
   emptyTitle = "Ask the agent about the data",
   emptyHint = 'Try "What were our biggest expenses?" or "Show me income by department"',
@@ -103,6 +108,7 @@ export default function AgentPanel({
     i: number,
     isAssistant: boolean,
     isLastText: boolean,
+    sources?: CitationSource[],
   ) {
     if (isDynamicToolUIPart(part)) {
       return (
@@ -122,7 +128,13 @@ export default function AgentPanel({
     switch (part.type) {
       case "text":
         return (
-          <TextRenderer key={i} part={part} isAssistant={isAssistant} isLastText={isLastText} />
+          <TextRenderer
+            key={i}
+            part={part}
+            isAssistant={isAssistant}
+            isLastText={isLastText}
+            sources={sources}
+          />
         )
       case "reasoning":
         return <ReasoningRenderer key={i} part={part} />
@@ -200,6 +212,7 @@ export default function AgentPanel({
                     )
                     const isLastMsg = msg.id === messages[messages.length - 1]?.id
                     const isStreamingMsg = msg.role === "assistant" && isBusy && isLastMsg
+                    const citationSources = getCitationSources ? getCitationSources(msg) : undefined
 
                     return (
                       <MessageScrollerItem
@@ -218,7 +231,7 @@ export default function AgentPanel({
                         ) : (
                           <div className="text-sm leading-relaxed">
                             {msg.parts.map((part, i) =>
-                              renderPart(part, i, true, i === lastTextIndex),
+                              renderPart(part, i, true, i === lastTextIndex, citationSources),
                             )}
                             {isStreamingMsg && statusText && (
                               <div className="mt-2">
@@ -238,6 +251,7 @@ export default function AgentPanel({
                                 </div>
                               )
                             })()}
+                            {renderAssistantFooter ? renderAssistantFooter(msg) : null}
                           </div>
                         )}
                       </MessageScrollerItem>
