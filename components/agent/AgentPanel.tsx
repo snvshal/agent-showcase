@@ -145,8 +145,8 @@ export default function AgentPanel({
 
   const lastAssistantMsg =
     messages[messages.length - 1]?.role === "assistant" ? messages[messages.length - 1] : undefined
-  const isStreamingLastMsg = isBusy && lastAssistantMsg !== undefined
   const statusText = isBusy ? getAgentStatus(status, lastAssistantMsg) : null
+  const isPendingFirstChunk = isBusy && !lastAssistantMsg
 
   return (
     <Card size="sm" className={`flex h-full min-h-0 flex-col pb-0 ${className ?? ""}`}>
@@ -201,10 +201,10 @@ export default function AgentPanel({
             )}
           </div>
         ) : (
-          <MessageScrollerProvider autoScroll scrollPreviousItemPeek={64}>
+          <MessageScrollerProvider autoScroll scrollPreviousItemPeek={0}>
             <MessageScroller className="flex-1">
               <MessageScrollerViewport>
-                <MessageScrollerContent className="px-3 pb-3">
+                <MessageScrollerContent className="gap-0 px-3 pb-3">
                   {messages.map((msg) => {
                     const lastTextIndex = msg.parts.reduce(
                       (last, p, idx) => (p.type === "text" ? idx : last),
@@ -221,7 +221,7 @@ export default function AgentPanel({
                         scrollAnchor={msg.role === "user"}
                       >
                         {msg.role === "user" ? (
-                          <div className="flex justify-end">
+                          <div className="mb-3 flex justify-end">
                             <div className="bg-muted max-w-[80%] rounded-lg px-4 py-2.5 text-sm leading-relaxed">
                               {msg.parts.map((part, i) =>
                                 renderPart(part, i, false, i === msg.parts.length - 1),
@@ -229,21 +229,24 @@ export default function AgentPanel({
                             </div>
                           </div>
                         ) : (
-                          <div className="text-sm leading-relaxed">
+                          <div className="mb-4 text-sm leading-relaxed">
                             {msg.parts.map((part, i) =>
                               renderPart(part, i, true, i === lastTextIndex, citationSources),
                             )}
+
                             {isStreamingMsg && statusText && (
-                              <div className="mt-2">
+                              <div className={msg.parts.length > 0 ? "mt-2" : ""}>
                                 <LoadingStatus text={statusText} showElapsed />
                               </div>
                             )}
+
                             {(() => {
                               const meta = msg.metadata as
                                 { usage?: TokenUsage; elapsedMs?: number } | undefined
                               const duration = meta?.elapsedMs
                               const usage = meta?.usage
                               if (duration === undefined && !usage) return null
+
                               return (
                                 <div className="mt-2 flex flex-wrap items-center gap-2">
                                   {usage && <TokenUsageBadge usage={usage} />}
@@ -251,16 +254,17 @@ export default function AgentPanel({
                                 </div>
                               )
                             })()}
+
                             {renderAssistantFooter ? renderAssistantFooter(msg) : null}
                           </div>
                         )}
                       </MessageScrollerItem>
                     )
                   })}
-                  {statusText && !isStreamingLastMsg && (
-                    <MessageScrollerItem>
-                      <div className="text-sm leading-relaxed">
-                        <LoadingStatus text={statusText} showElapsed />
+                  {isPendingFirstChunk && (
+                    <MessageScrollerItem key="pending-assistant-turn">
+                      <div className="mb-4 text-sm leading-relaxed">
+                        <LoadingStatus text={statusText ?? "Working on your request"} showElapsed />
                       </div>
                     </MessageScrollerItem>
                   )}

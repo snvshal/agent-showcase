@@ -16,7 +16,10 @@ function BrailleSpinner() {
   }, [])
 
   return (
-    <span className="inline-block w-3.5 text-center font-mono leading-none" aria-hidden="true">
+    <span
+      className="text-muted-foreground inline-block w-3.5 text-center font-mono leading-none"
+      aria-hidden="true"
+    >
       {spinnerFrames[frame]}
     </span>
   )
@@ -47,7 +50,7 @@ export default function LoadingStatus({ icon, text, showElapsed = false }: Loadi
   }, [showElapsed])
 
   return (
-    <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
+    <div className="text-muted-foreground flex h-5 min-h-5 items-center gap-1.5 text-xs select-none">
       {icon ?? <BrailleSpinner />}
       <span className={shimmerTextClass}>{text}...</span>
       {showElapsed && (
