@@ -254,7 +254,6 @@ export default function AgentPanel({
                                 </div>
                               )
                             })()}
-
                             {renderAssistantFooter ? renderAssistantFooter(msg) : null}
                           </div>
                         )}
