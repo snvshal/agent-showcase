@@ -1,59 +1,100 @@
 import Link from "next/link"
-import { ArrowRight, Bot } from "lucide-react"
+import { ArrowUpRight, Bot } from "lucide-react"
 import { SHOWCASES } from "@/lib/showcases"
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b px-6 py-4">
-        <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-          <Bot className="size-5" />
-          Agent Showcase
+      <header className="border-border/70 border-b">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
+          <div className="flex items-center gap-2.5 text-sm font-semibold tracking-tight">
+            <Bot className="text-primary size-4" strokeWidth={2.2} />
+            Agent Showcase
+          </div>
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </header>
 
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-6 py-16">
-        <section className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight">AI Agent Showcase</h1>
-          <p className="text-muted-foreground mt-3 text-lg">
-            A collection of AI agent demonstrations — pick one to open an interactive chat.
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 pt-16 pb-20 sm:px-8 sm:pt-24">
+        <section className="mb-16 max-w-2xl sm:mb-20">
+          <p className="text-primary mb-5 text-xs font-semibold tracking-[0.16em] uppercase">
+            A collection of practical AI
+          </p>
+          <h1 className="text-5xl leading-[1.08] font-semibold tracking-[-0.05em] sm:text-6xl">
+            Useful agents.
+            <br />
+            <span className="text-muted-foreground">Real work, made easier.</span>
+          </h1>
+          <p className="text-muted-foreground mt-6 max-w-xl text-base leading-7 sm:text-lg">
+            Explore focused demos for everyday tasks, from analyzing data to creating documents and
+            designs.
           </p>
         </section>
 
-        <section className="grid gap-6 sm:grid-cols-2">
-          {SHOWCASES.map((showcase) => {
-            const Icon = showcase.icon
-            return (
-              <Link
-                key={showcase.href}
-                href={showcase.href}
-                className="group focus-visible:ring-ring/50 rounded-xl outline-none focus-visible:ring-3"
-              >
-                <Card className="group-hover:ring-foreground/20 group-focus-visible:ring-foreground/30 h-full transition-all group-hover:-translate-y-0.5">
-                  <CardHeader>
-                    <div
-                      className={`flex size-10 items-center justify-center rounded-lg ${showcase.accent}`}
-                    >
-                      <Icon className="size-5" />
-                    </div>
-                    <CardTitle>{showcase.title}</CardTitle>
-                    <CardDescription>{showcase.description}</CardDescription>
-                  </CardHeader>
-                  <CardFooter>
-                    <span className="flex items-center gap-1 text-sm font-medium">
-                      Open showcase
-                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                    </span>
-                  </CardFooter>
-                </Card>
-              </Link>
-            )
-          })}
+        <section aria-labelledby="showcases-heading">
+          <div className="border-border mb-5 flex items-baseline justify-between border-b pb-3 sm:mb-6">
+            <h2 id="showcases-heading" className="text-sm font-semibold tracking-tight">
+              Explore the showcases
+            </h2>
+            <span className="text-muted-foreground text-xs">{SHOWCASES.length} demos</span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+            {SHOWCASES.map((showcase) => {
+              const Icon = showcase.icon
+
+              return (
+                <Link
+                  key={showcase.href}
+                  href={showcase.href}
+                  className="group focus-visible:ring-ring rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-offset-4"
+                >
+                  <Card className="border-border/80 bg-card group-hover:border-primary/35 group-hover:bg-muted/40 h-full rounded-2xl border shadow-none transition-colors">
+                    <CardHeader className="gap-5 p-5 sm:p-6">
+                      <div className="flex items-center justify-between">
+                        <span className="bg-accent text-accent-foreground flex size-10 items-center justify-center rounded-xl">
+                          <Icon className="size-[18px]" strokeWidth={1.8} />
+                        </span>
+                        <ArrowUpRight className="text-muted-foreground group-hover:text-primary size-4 transition-colors" />
+                      </div>
+                      <div className="grid gap-2">
+                        <CardTitle className="text-base font-semibold tracking-tight">
+                          {showcase.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm leading-6">
+                          {showcase.description}
+                        </CardDescription>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              )
+            })}
+          </div>
         </section>
       </main>
+
+      <footer
+        aria-hidden="true"
+        className="relative mt-12 h-[clamp(8rem,22vw,15rem)] overflow-hidden"
+      >
+        <div className="relative h-full">
+          <p className="absolute inset-x-0 bottom-0 translate-y-[10%] text-center text-[clamp(3.5rem,22vw,18rem)] leading-[0.8] font-semibold tracking-[0.02em] whitespace-nowrap text-transparent select-none [-webkit-text-stroke:1.5px_color-mix(in_oklab,var(--foreground)_32%,transparent)]">
+            AGENTS
+          </p>
+          <p
+            className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-[10%] text-center text-[clamp(3.5rem,22vw,18rem)] leading-[0.8] font-semibold tracking-[0.02em] whitespace-nowrap text-transparent opacity-70 blur-[1.5px] select-none [-webkit-text-stroke:3px_rgba(56,72,120,0.5)] dark:opacity-80 dark:blur-[2px] dark:[-webkit-text-stroke:4px_rgba(0,0,0,0.8)]"
+            style={{
+              maskImage: "linear-gradient(to top, black 0%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to top, black 0%, transparent 100%)",
+            }}
+          >
+            AGENTS
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
