@@ -5,7 +5,7 @@ import type { ChatStatus, UIDataTypes, UIMessage, UIMessagePart, UITools } from 
 import { isDynamicToolUIPart, isToolUIPart } from "ai"
 import { Card, CardHeader, CardTitle, CardContent, CardAction } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Send, Bot, Square } from "lucide-react"
+import { Plus, Send, Bot, Square, RotateCcw } from "lucide-react"
 import {
   MessageScrollerProvider,
   MessageScroller,
@@ -28,7 +28,7 @@ export interface AgentPanelProps {
   error?: Error | undefined
   sendMessage: (message: { text: string }) => Promise<void>
   stop: () => void
-  regenerate: () => Promise<void>
+  regenerate: (options?: { messageId?: string }) => Promise<void>
   onNewChat?: () => void
   renderToolCall?: (
     part: UIMessagePart<UIDataTypes, UITools> & { type: "dynamic-tool" },
@@ -245,12 +245,26 @@ export default function AgentPanel({
                                 { usage?: TokenUsage; elapsedMs?: number } | undefined
                               const duration = meta?.elapsedMs
                               const usage = meta?.usage
-                              if (duration === undefined && !usage) return null
+                              const isLastAssistant = msg.id === lastAssistantMsg?.id && !isBusy
+
+                              if (duration === undefined && !usage && !isLastAssistant) return null
 
                               return (
                                 <div className="mt-2 flex flex-wrap items-center gap-2">
                                   {usage && <TokenUsageBadge usage={usage} />}
                                   {duration !== undefined && <MessageDuration ms={duration} />}
+                                  {isLastAssistant && (
+                                    <button
+                                      type="button"
+                                      onClick={() => regenerate()}
+                                      disabled={isBusy}
+                                      aria-label="Retry response"
+                                      className="text-muted-foreground border-border bg-muted/50 hover:bg-muted hover:text-foreground relative inline-flex cursor-pointer items-center gap-1.5 rounded-lg border py-0.5 pr-2 pl-1.5 text-[11px] font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"
+                                    >
+                                      <RotateCcw className="size-3.5" />
+                                      <span>Retry</span>
+                                    </button>
+                                  )}
                                 </div>
                               )
                             })()}
