@@ -80,7 +80,10 @@ export function getAll(params: {
   if (params.query) {
     const q = params.query.toLowerCase()
     data = data.filter(
-      (t) => t.description.toLowerCase().includes(q) || t.counterparty.toLowerCase().includes(q),
+      (t) =>
+        t.description.toLowerCase().includes(q) ||
+        t.counterparty.toLowerCase().includes(q) ||
+        (t.notes && t.notes.toLowerCase().includes(q)),
     )
   }
   if (params.type === "income" || params.type === "expense") {
@@ -110,7 +113,10 @@ export function searchTransactions(params: SearchParams): {
   if (params.query) {
     const q = params.query.toLowerCase()
     data = data.filter(
-      (t) => t.description.toLowerCase().includes(q) || t.counterparty.toLowerCase().includes(q),
+      (t) =>
+        t.description.toLowerCase().includes(q) ||
+        t.counterparty.toLowerCase().includes(q) ||
+        (t.notes && t.notes.toLowerCase().includes(q)),
     )
   }
   if (params.type) data = data.filter((t) => t.type === params.type)

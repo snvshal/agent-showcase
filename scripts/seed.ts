@@ -10,11 +10,13 @@ if (dir && !existsSync(dir)) {
   mkdirSync(dir, { recursive: true })
 }
 
-if (existsSync(dataDir)) {
+const isForce = process.argv.includes("--force")
+
+if (existsSync(dataDir) && !isForce) {
   const content = readFileSync(dataDir, "utf-8")
   const existing = JSON.parse(content)
   if (existing.length > 0) {
-    console.log(`Data file already has ${existing.length} records.`)
+    console.log(`Data file already has ${existing.length} records. Pass --force to overwrite.`)
     process.exit(0)
   }
 }

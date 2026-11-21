@@ -131,8 +131,8 @@ export default memo(function DataTable() {
 
       <div data-slot="table-scroll" className="min-h-0 flex-1 overflow-auto rounded-lg border">
         <Table>
-          <TableHeader className="sticky top-0 z-10">
-            <TableRow className="bg-background">
+          <TableHeader className="bg-background sticky top-0 z-10">
+            <TableRow className="bg-background hover:bg-background border-b">
               <TableHead
                 className="hover:text-foreground cursor-pointer"
                 aria-sort={
@@ -218,8 +218,12 @@ export default memo(function DataTable() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={t.type === "income" ? "default" : "destructive"}
-                      className="capitalize"
+                      variant={t.type === "income" ? "outline" : "destructive"}
+                      className={
+                        t.type === "income"
+                          ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 capitalize dark:bg-emerald-500/20 dark:text-emerald-400"
+                          : "capitalize"
+                      }
                     >
                       {t.type}
                     </Badge>
