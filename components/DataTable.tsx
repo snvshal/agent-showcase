@@ -218,11 +218,11 @@ export default memo(function DataTable() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={t.type === "income" ? "outline" : "destructive"}
+                      variant="outline"
                       className={
                         t.type === "income"
-                          ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 capitalize dark:bg-emerald-500/20 dark:text-emerald-400"
-                          : "capitalize"
+                          ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 capitalize dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400"
+                          : "border-destructive/25 bg-destructive/10 text-destructive dark:border-destructive/30 dark:bg-destructive/20 capitalize"
                       }
                     >
                       {t.type}
