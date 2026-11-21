@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Agent Showcase",
+  title: "agents.",
   description:
     "A collection of AI agent demonstrations — analyze transactions or generate PDF documents on demand.",
 }
