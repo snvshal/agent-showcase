@@ -17,7 +17,7 @@ export const SHOWCASES: ShowcaseMeta[] = [
     label: "Financial",
     title: "Financial Transactions",
     description:
-      "Ask natural-language questions about income and expense data, with a read-only analyst agent and a sortable data table.",
+      "Analyze income and expense transactions with natural-language questions and an interactive data table.",
     icon: Receipt,
     accent: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
   },
@@ -27,7 +27,7 @@ export const SHOWCASES: ShowcaseMeta[] = [
     label: "PDF Generator",
     title: "PDF Generator",
     description:
-      "Describe any document — resume, report, contract, or letter — and the agent drafts the content and renders a downloadable PDF.",
+      "Describe documents like resumes, reports, contracts, or letters to generate and download polished PDFs.",
     icon: FileText,
     accent: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
   },
@@ -37,7 +37,7 @@ export const SHOWCASES: ShowcaseMeta[] = [
     label: "Design Generator",
     title: "Design Generator",
     description:
-      "Ask for a social post, banner, flyer, or quote card — and the agent plans the layout and renders a downloadable vector graphic.",
+      "Request social posts, banners, flyers, or cards to plan visual layouts and export downloadable graphics.",
     icon: Palette,
     accent: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
   },
@@ -47,7 +47,7 @@ export const SHOWCASES: ShowcaseMeta[] = [
     label: "Web Search",
     title: "Web Search",
     description:
-      "Ask anything — news, specs, prices, comparisons — and the agent searches the live web and answers with cited sources.",
+      "Ask about news, specs, pricing, or comparisons to explore the live web with cited sources.",
     icon: Search,
     accent: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
   },

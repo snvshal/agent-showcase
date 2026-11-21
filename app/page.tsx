@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowUpRight, Bot } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 import { SHOWCASES } from "@/lib/showcases"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -9,10 +9,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <header className="border-border/70 border-b">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
-          <div className="flex items-center gap-2.5 text-sm font-semibold tracking-tight">
-            <Bot className="text-primary size-4" strokeWidth={2.2} />
-            Agent Showcase
-          </div>
+          <Link
+            href="/"
+            className="lava-text font-jetbrains text-lg font-bold tracking-tight transition-opacity hover:opacity-90 sm:text-xl"
+          >
+            agents.
+          </Link>
           <ThemeToggle />
         </div>
       </header>
@@ -22,12 +24,12 @@ export default function Home() {
           <p className="text-primary mb-5 text-xs font-semibold tracking-[0.16em] uppercase">
             A collection of practical AI
           </p>
-          <h1 className="text-5xl leading-[1.08] font-semibold tracking-[-0.05em] sm:text-6xl">
+          <h1 className="text-5xl leading-[1.08] font-semibold tracking-[-0.05em] text-pretty sm:text-6xl">
             Useful agents.
             <br />
             <span className="text-muted-foreground">Real work, made easier.</span>
           </h1>
-          <p className="text-muted-foreground mt-6 max-w-xl text-base leading-7 sm:text-lg">
+          <p className="text-muted-foreground mt-6 max-w-xl text-base leading-7 text-pretty sm:text-lg">
             Explore focused demos for everyday tasks, from analyzing data to creating documents and
             designs.
           </p>
@@ -63,7 +65,7 @@ export default function Home() {
                         <CardTitle className="text-base font-semibold tracking-tight">
                           {showcase.title}
                         </CardTitle>
-                        <CardDescription className="text-sm leading-6">
+                        <CardDescription className="text-sm leading-6 text-pretty">
                           {showcase.description}
                         </CardDescription>
                       </div>
