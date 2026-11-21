@@ -1,12 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
 import { Receipt, Table2, Bot } from "lucide-react"
 import DataTable from "@/components/DataTable"
 import AgentPanel from "@/components/agent/AgentPanel"
-import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
+import { useAgentChat } from "@/components/agent/useAgentChat"
 import BackLink from "@/components/BackLink"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
@@ -19,21 +17,10 @@ const EXAMPLES = [
 export default function Home() {
   const [tab, setTab] = useState<"data" | "agent">("data")
   const [draft, setDraft] = useState("")
-  const chat = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/agent",
-      body: { agent: "financial" },
-    }),
-  })
-
-  const handleStop = () => {
-    chat.stop()
-    chat.setMessages(finalizeAbortedParts(chat.messages))
-  }
+  const chat = useAgentChat("financial")
 
   const handleNewChat = () => {
-    chat.stop()
-    chat.setMessages([])
+    chat.stopAndClear()
     setDraft("")
   }
 
@@ -95,7 +82,7 @@ export default function Home() {
               status={chat.status}
               error={chat.error}
               sendMessage={chat.sendMessage}
-              stop={handleStop}
+              stop={chat.stop}
               regenerate={chat.regenerate}
               onNewChat={handleNewChat}
               value={draft}
@@ -119,7 +106,7 @@ export default function Home() {
             status={chat.status}
             error={chat.error}
             sendMessage={chat.sendMessage}
-            stop={handleStop}
+            stop={chat.stop}
             regenerate={chat.regenerate}
             onNewChat={handleNewChat}
             value={draft}

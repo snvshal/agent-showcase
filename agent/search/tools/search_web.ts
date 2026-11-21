@@ -28,16 +28,17 @@ export const search_web_tool = dynamicTool({
       .optional()
       .describe("'advanced' runs a slower, deeper search; use for detailed or niche queries"),
   }),
-  execute: async (params) => {
+  execute: async (params, { abortSignal }) => {
     const { query, maxResults, searchDepth } = params as {
       query: string
       maxResults?: number
       searchDepth?: "basic" | "advanced"
     }
     try {
-      const results = await searchWeb(query, { maxResults, searchDepth })
+      const results = await searchWeb(query, { maxResults, searchDepth, signal: abortSignal })
       return { query, results } satisfies SearchWebOutput
     } catch (error) {
+      if (abortSignal?.aborted) throw error
       return {
         query,
         results: [],

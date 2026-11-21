@@ -8,6 +8,7 @@ interface TextRendererProps {
   part: UIMessagePart<UIDataTypes, UITools> & { type: "text" }
   isAssistant: boolean
   isLastText: boolean
+  isResponseActive: boolean
   sources?: CitationSource[]
 }
 
@@ -15,9 +16,10 @@ export default function TextRenderer({
   part,
   isAssistant,
   isLastText,
+  isResponseActive,
   sources,
 }: TextRendererProps) {
-  const isStreaming = isAssistant && isLastText && part.state === "streaming"
+  const isStreaming = isAssistant && isLastText && isResponseActive && part.state === "streaming"
 
   return (
     <div className="w-full">

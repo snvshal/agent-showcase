@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
 import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
 import { Bot, Download, ExternalLink, Palette } from "lucide-react"
 import AgentPanel from "@/components/agent/AgentPanel"
-import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
+import { useAgentChat } from "@/components/agent/useAgentChat"
 import {
   designUrlForPart,
   exportDesignPng,
@@ -115,12 +113,7 @@ function DesignViewer({ design }: { design: DesignResult | null }) {
 export default function DesignPage() {
   const [tab, setTab] = useState<"preview" | "agent">("preview")
   const [draft, setDraft] = useState("")
-  const chat = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/agent",
-      body: { agent: "design" },
-    }),
-  })
+  const chat = useAgentChat("design")
 
   const design = getLatestDesign(chat.messages)
   const [selected, setSelected] = useState<DesignResult | null>(null)
@@ -136,15 +129,9 @@ export default function DesignPage() {
 
   const viewer = selected ?? design
 
-  const handleStop = () => {
-    chat.stop()
-    chat.setMessages(finalizeAbortedParts(chat.messages))
-  }
-
   const handleNewChat = () => {
-    chat.stop()
+    chat.stopAndClear()
     revokeDesignObjectUrls()
-    chat.setMessages([])
     setDraft("")
   }
 
@@ -154,7 +141,7 @@ export default function DesignPage() {
       status={chat.status}
       error={chat.error}
       sendMessage={chat.sendMessage}
-      stop={handleStop}
+      stop={chat.stop}
       regenerate={chat.regenerate}
       onNewChat={handleNewChat}
       value={draft}

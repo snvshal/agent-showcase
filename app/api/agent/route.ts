@@ -1,4 +1,5 @@
 import {
+  consumeStream,
   convertToModelMessages,
   createUIMessageStreamResponse,
   generateId,
@@ -61,5 +62,6 @@ export async function POST(request: Request) {
         return undefined
       },
     }),
+    consumeSseStream: consumeStream,
   })
 }

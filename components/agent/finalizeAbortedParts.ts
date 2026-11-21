@@ -1,3 +1,4 @@
+import { isToolUIPart } from "ai"
 import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
 
 export const ABORT_ERROR = "Stopped by user"
@@ -5,14 +6,21 @@ export const ABORT_ERROR = "Stopped by user"
 function finalizePart(
   part: UIMessagePart<UIDataTypes, UITools>,
 ): UIMessagePart<UIDataTypes, UITools> {
-  if (part.type !== "dynamic-tool") return part
-  if (part.state === "input-streaming" || part.state === "input-available") {
+  if ((part.type === "text" || part.type === "reasoning") && part.state === "streaming") {
+    return { ...part, state: "done" }
+  }
+
+  if (
+    isToolUIPart(part) &&
+    (part.state === "input-streaming" || part.state === "input-available")
+  ) {
     return {
       ...part,
       state: "output-error",
       errorText: ABORT_ERROR,
     } as UIMessagePart<UIDataTypes, UITools>
   }
+
   return part
 }
 

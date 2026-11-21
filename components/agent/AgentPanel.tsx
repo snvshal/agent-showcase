@@ -78,11 +78,13 @@ export default function AgentPanel({
   className,
 }: AgentPanelProps) {
   const [input, setInput] = useState("")
+  const [stopRequested, setStopRequested] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const draft = value ?? input
   const setDraft = onValueChange ?? setInput
   const isBusy = status === "submitted" || status === "streaming"
+  const isResponseActive = isBusy && !stopRequested
 
   useEffect(() => {
     const el = textareaRef.current
@@ -99,8 +101,14 @@ export default function AgentPanel({
 
     const msg = draft.trim()
     if (!msg) return
+    setStopRequested(false)
     setDraft("")
     sendMessage({ text: msg })
+  }
+
+  function handleStop() {
+    setStopRequested(true)
+    stop()
   }
 
   function renderPart(
@@ -108,12 +116,13 @@ export default function AgentPanel({
     i: number,
     isAssistant: boolean,
     isLastText: boolean,
+    responseActive: boolean,
     sources?: CitationSource[],
   ) {
     if (isDynamicToolUIPart(part)) {
       return (
         <div key={i}>
-          <ToolCallRenderer part={part} />
+          <ToolCallRenderer part={part} isResponseActive={responseActive} />
           {renderToolCall ? renderToolCall(part) : null}
         </div>
       )
@@ -121,7 +130,7 @@ export default function AgentPanel({
     if (isToolUIPart(part)) {
       return (
         <div key={i}>
-          <ToolCallRenderer part={part} />
+          <ToolCallRenderer part={part} isResponseActive={responseActive} />
         </div>
       )
     }
@@ -133,11 +142,12 @@ export default function AgentPanel({
             part={part}
             isAssistant={isAssistant}
             isLastText={isLastText}
+            isResponseActive={responseActive}
             sources={sources}
           />
         )
       case "reasoning":
-        return <ReasoningRenderer key={i} part={part} />
+        return <ReasoningRenderer key={i} part={part} isResponseActive={responseActive} />
       default:
         return null
     }
@@ -145,8 +155,8 @@ export default function AgentPanel({
 
   const lastAssistantMsg =
     messages[messages.length - 1]?.role === "assistant" ? messages[messages.length - 1] : undefined
-  const statusText = isBusy ? getAgentStatus(status, lastAssistantMsg) : null
-  const isPendingFirstChunk = isBusy && !lastAssistantMsg
+  const statusText = isResponseActive ? getAgentStatus(status, lastAssistantMsg) : null
+  const isPendingFirstChunk = isResponseActive && !lastAssistantMsg
 
   return (
     <Card size="sm" className={`flex h-full min-h-0 flex-col pb-0 ${className ?? ""}`}>
@@ -154,7 +164,15 @@ export default function AgentPanel({
         <CardTitle>Agent Chat</CardTitle>
         <CardAction className="h-7">
           {onNewChat && messages.length > 0 && (
-            <Button type="button" variant="outline" size="sm" onClick={onNewChat}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setStopRequested(isBusy)
+                onNewChat()
+              }}
+            >
               <Plus className="size-3.5" />
               New chat
             </Button>
@@ -169,7 +187,10 @@ export default function AgentPanel({
               variant="outline"
               size="sm"
               className="h-6 border-red-200 px-2 text-[11px] text-red-600 hover:bg-red-100 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40"
-              onClick={() => regenerate()}
+              onClick={() => {
+                setStopRequested(false)
+                regenerate()
+              }}
             >
               Retry
             </Button>
@@ -191,7 +212,10 @@ export default function AgentPanel({
                     variant="outline"
                     size="sm"
                     disabled={isBusy}
-                    onClick={() => sendMessage({ text: suggestion })}
+                    onClick={() => {
+                      setStopRequested(false)
+                      sendMessage({ text: suggestion })
+                    }}
                     className="text-muted-foreground h-auto px-3 py-2 text-left whitespace-normal"
                   >
                     {suggestion}
@@ -211,7 +235,11 @@ export default function AgentPanel({
                       -1,
                     )
                     const isLastMsg = msg.id === messages[messages.length - 1]?.id
-                    const isStreamingMsg = msg.role === "assistant" && isBusy && isLastMsg
+                    const messageResponseActive =
+                      msg.role === "assistant" &&
+                      isResponseActive &&
+                      msg.id === lastAssistantMsg?.id
+                    const isStreamingMsg = messageResponseActive && isLastMsg
                     const citationSources = getCitationSources ? getCitationSources(msg) : undefined
 
                     return (
@@ -224,14 +252,21 @@ export default function AgentPanel({
                           <div className="mb-3 flex justify-end">
                             <div className="bg-muted max-w-[80%] rounded-lg px-4 py-2.5 text-sm leading-relaxed">
                               {msg.parts.map((part, i) =>
-                                renderPart(part, i, false, i === msg.parts.length - 1),
+                                renderPart(part, i, false, i === msg.parts.length - 1, false),
                               )}
                             </div>
                           </div>
                         ) : (
                           <div className="mb-4 text-sm leading-relaxed">
                             {msg.parts.map((part, i) =>
-                              renderPart(part, i, true, i === lastTextIndex, citationSources),
+                              renderPart(
+                                part,
+                                i,
+                                true,
+                                i === lastTextIndex,
+                                messageResponseActive,
+                                citationSources,
+                              ),
                             )}
 
                             {isStreamingMsg && statusText && (
@@ -250,13 +285,16 @@ export default function AgentPanel({
                               if (duration === undefined && !usage && !isLastAssistant) return null
 
                               return (
-                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                <div className="mt-4 flex flex-wrap items-center gap-2">
                                   {usage && <TokenUsageBadge usage={usage} />}
                                   {duration !== undefined && <MessageDuration ms={duration} />}
                                   {isLastAssistant && (
                                     <button
                                       type="button"
-                                      onClick={() => regenerate()}
+                                      onClick={() => {
+                                        setStopRequested(false)
+                                        regenerate()
+                                      }}
                                       disabled={isBusy}
                                       aria-label="Retry response"
                                       className="text-muted-foreground border-border bg-muted/50 hover:bg-muted hover:text-foreground relative inline-flex cursor-pointer items-center gap-1.5 rounded-lg border py-0.5 pr-2 pl-1.5 text-[11px] font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"
@@ -315,9 +353,10 @@ export default function AgentPanel({
               type="button"
               size="icon-lg"
               variant="outline"
+              disabled={stopRequested}
               onClick={(e) => {
                 e.preventDefault()
-                stop()
+                handleStop()
               }}
             >
               <Square className="size-4" />

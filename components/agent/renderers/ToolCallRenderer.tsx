@@ -21,6 +21,7 @@ import { toolDisplayName } from "@/components/agent/toolLabels"
 
 export interface ToolCallRendererProps {
   part: ToolUIPart<UITools> | DynamicToolUIPart
+  isResponseActive: boolean
 }
 
 function formatValue(value: unknown): string {
@@ -44,7 +45,7 @@ function getToolIcon(toolName: string): ReactNode {
   }
 }
 
-export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
+export default function ToolCallRenderer({ part, isResponseActive }: ToolCallRendererProps) {
   const toolName = getToolOrDynamicToolName(part)
   const displayName = toolDisplayName(toolName)
   const loadingBodyRef = useRef<HTMLDivElement>(null)
@@ -59,10 +60,10 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
   const isOutput = part.state === "output-available"
   const isError = part.state === "output-error"
   const isStreaming = part.state === "input-streaming"
-  const isLoading = isStreaming || isInput
-  const hasBody = (isInput && part.input !== undefined) || isOutput || isError
-
-  const isStopped = isError && part.errorText === ABORT_ERROR
+  const isPending = isStreaming || isInput
+  const isStopped = (isError && part.errorText === ABORT_ERROR) || (!isResponseActive && isPending)
+  const isLoading = isResponseActive && isPending
+  const hasBody = (isInput && part.input !== undefined) || isOutput || isError || isStopped
 
   const toolIcon = getToolIcon(toolName)
 
@@ -184,6 +185,10 @@ export default function ToolCallRenderer({ part }: ToolCallRendererProps) {
             {activeTab === "input" ? (
               <pre className="text-muted-foreground max-h-[180px] overflow-x-auto whitespace-pre-wrap">
                 {part.input !== undefined ? formatValue(part.input).slice(0, 2000) : "No input"}
+              </pre>
+            ) : isStopped ? (
+              <pre className="text-muted-foreground max-h-[180px] overflow-x-auto whitespace-pre-wrap">
+                {ABORT_ERROR}
               </pre>
             ) : isError ? (
               <pre

@@ -1,12 +1,10 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
 import { Bot, Link2, Search } from "lucide-react"
 import AgentPanel from "@/components/agent/AgentPanel"
 import SourcesPanel from "@/components/agent/SourcesPanel"
-import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
+import { useAgentChat } from "@/components/agent/useAgentChat"
 import { getCitationSourcesByMessage } from "@/components/agent/citations"
 import type { CitationSource } from "@/components/agent/citations"
 import BackLink from "@/components/BackLink"
@@ -23,12 +21,7 @@ export default function SearchPage() {
   const [tab, setTab] = useState<"sources" | "agent">("sources")
   const [draft, setDraft] = useState("")
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
-  const chat = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/agent",
-      body: { agent: "search" },
-    }),
-  })
+  const chat = useAgentChat("search")
 
   const sourcesByMessage = useMemo(
     () => getCitationSourcesByMessage(chat.messages),
@@ -64,14 +57,8 @@ export default function SearchPage() {
   const activeMessageId = selectedMessageId ?? latestSourcesMessageId
   const activeSources = activeMessageId ? (sourcesByMessage.get(activeMessageId) ?? null) : null
 
-  const handleStop = () => {
-    chat.stop()
-    chat.setMessages(finalizeAbortedParts(chat.messages))
-  }
-
   const handleNewChat = () => {
-    chat.stop()
-    chat.setMessages([])
+    chat.stopAndClear()
     setDraft("")
     setSelectedMessageId(null)
   }
@@ -82,7 +69,7 @@ export default function SearchPage() {
       status={chat.status}
       error={chat.error}
       sendMessage={chat.sendMessage}
-      stop={handleStop}
+      stop={chat.stop}
       regenerate={chat.regenerate}
       onNewChat={handleNewChat}
       value={draft}

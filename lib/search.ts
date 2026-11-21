@@ -59,6 +59,7 @@ function normalizeResults(data: ExaResponse): SearchResult[] {
 export interface SearchWebOptions {
   maxResults?: number
   searchDepth?: "basic" | "advanced"
+  signal?: AbortSignal
 }
 
 const EXA_SEARCH_TYPES: Record<NonNullable<SearchWebOptions["searchDepth"]>, string> = {
@@ -68,8 +69,10 @@ const EXA_SEARCH_TYPES: Record<NonNullable<SearchWebOptions["searchDepth"]>, str
 
 export async function searchWeb(
   query: string,
-  { maxResults = 5, searchDepth = "basic" }: SearchWebOptions = {},
+  { maxResults = 5, searchDepth = "basic", signal }: SearchWebOptions = {},
 ): Promise<SearchResult[]> {
+  signal?.throwIfAborted()
+
   const apiKey = process.env.EXA_API_KEY
   if (!apiKey) {
     throw new Error("EXA_API_KEY is not configured. Add it to your .env.local file.")
@@ -95,9 +98,12 @@ export async function searchWeb(
         numResults: maxResults,
         contents: { highlights: true },
       }),
-      signal: AbortSignal.timeout(20_000),
+      signal: signal
+        ? AbortSignal.any([signal, AbortSignal.timeout(20_000)])
+        : AbortSignal.timeout(20_000),
     })
   } catch (error) {
+    if (signal?.aborted) throw error
     throw new Error(`Web search failed: ${error instanceof Error ? error.message : String(error)}`)
   }
 

@@ -1,12 +1,10 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
 import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai"
 import { Bot, ExternalLink, Eye, FileText } from "lucide-react"
 import AgentPanel from "@/components/agent/AgentPanel"
-import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
+import { useAgentChat } from "@/components/agent/useAgentChat"
 import { objectUrlForPart, revokePdfObjectUrls } from "@/components/agent/pdfObjectUrl"
 import PdfResultRenderer from "@/components/agent/renderers/PdfResultRenderer"
 import BackLink from "@/components/BackLink"
@@ -78,12 +76,7 @@ function PdfViewer({ url }: { url: string | null }) {
 export default function PdfPage() {
   const [tab, setTab] = useState<"preview" | "agent">("preview")
   const [draft, setDraft] = useState("")
-  const chat = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/agent",
-      body: { agent: "pdf" },
-    }),
-  })
+  const chat = useAgentChat("pdf")
 
   const latestUrl = getLatestPdfUrl(chat.messages)
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null)
@@ -98,15 +91,9 @@ export default function PdfPage() {
 
   const viewerUrl = selectedUrl ?? latestUrl
 
-  const handleStop = () => {
-    chat.stop()
-    chat.setMessages(finalizeAbortedParts(chat.messages))
-  }
-
   const handleNewChat = () => {
-    chat.stop()
+    chat.stopAndClear()
     revokePdfObjectUrls()
-    chat.setMessages([])
     setDraft("")
   }
 
@@ -116,7 +103,7 @@ export default function PdfPage() {
       status={chat.status}
       error={chat.error}
       sendMessage={chat.sendMessage}
-      stop={handleStop}
+      stop={chat.stop}
       regenerate={chat.regenerate}
       onNewChat={handleNewChat}
       value={draft}

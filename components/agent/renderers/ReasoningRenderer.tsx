@@ -6,9 +6,10 @@ import { ChevronDown, CircleDashed, Lightbulb } from "lucide-react"
 
 interface ReasoningRendererProps {
   part: UIMessagePart<UIDataTypes, UITools> & { type: "reasoning" }
+  isResponseActive: boolean
 }
 
-export default function ReasoningRenderer({ part }: ReasoningRendererProps) {
+export default function ReasoningRenderer({ part, isResponseActive }: ReasoningRendererProps) {
   const streamingBodyRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function ReasoningRenderer({ part }: ReasoningRendererProps) {
     if (el) el.scrollTop = el.scrollHeight
   }, [part.text])
 
-  const isStreaming = part.state === "streaming"
+  const isStreaming = isResponseActive && part.state === "streaming"
 
   return (
     <details
