@@ -427,7 +427,7 @@ export default function MarkdownRenderer({
     <div className="space-y-2">
       {blocks}
       {isStreaming && (
-        <span className="bg-foreground/50 ml-0.5 inline-block h-4 w-3 animate-pulse rounded-none align-text-bottom" />
+        <span className="bg-foreground/50 ml-0.5 inline-block h-4 w-2.5 animate-pulse rounded-none align-text-bottom" />
       )}
     </div>
   )
