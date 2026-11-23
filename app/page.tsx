@@ -1,12 +1,18 @@
 import Link from "next/link"
+import { JetBrains_Mono } from "next/font/google"
 import { ArrowUpRight } from "lucide-react"
 import { SHOWCASES } from "@/lib/showcases"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+})
+
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={`${jetbrainsMono.variable} flex min-h-screen flex-col`}>
       <header className="border-border/70 border-b">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
           <Link
@@ -44,14 +50,19 @@ export default function Home() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-            {SHOWCASES.map((showcase) => {
+            {SHOWCASES.map((showcase, index) => {
               const Icon = showcase.icon
+              const centerLastCard = SHOWCASES.length % 2 === 1 && index === SHOWCASES.length - 1
 
               return (
                 <Link
                   key={showcase.href}
                   href={showcase.href}
-                  className="group focus-visible:ring-ring rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-offset-4"
+                  className={`group focus-visible:ring-ring rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-offset-4 ${
+                    centerLastCard
+                      ? "sm:col-span-2 sm:w-[calc((100%_-_1rem)_/_2)] sm:justify-self-center"
+                      : ""
+                  }`}
                 >
                   <Card className="border-border/80 bg-card group-hover:border-primary/35 group-hover:bg-muted/40 h-full rounded-2xl border shadow-none transition-colors">
                     <CardHeader className="gap-5 p-5 sm:p-6">

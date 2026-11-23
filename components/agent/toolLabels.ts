@@ -4,6 +4,7 @@ const TOOL_LABELS: Record<string, string> = {
   generate_design: "Design generator",
   generate_pdf: "PDF generator",
   search_web: "Web search",
+  generate_webpage: "Webpage builder",
 }
 
 export function toolDisplayName(name: string): string {

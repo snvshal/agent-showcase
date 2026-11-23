@@ -1,0 +1,1 @@
+export const MAX_WEBPAGE_DIFF_LENGTH = 40_000
