@@ -48,7 +48,7 @@ export default function ReasoningRenderer({ part, isResponseActive }: ReasoningR
       >
         {part.text}
         {isStreaming && (
-          <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-none bg-amber-500/70 align-text-bottom" />
+          <span className="ml-0.5 inline-block h-3.5 w-2 animate-pulse rounded-none bg-amber-500/70 align-text-bottom" />
         )}
       </div>
     </details>
