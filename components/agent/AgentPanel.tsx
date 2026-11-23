@@ -121,7 +121,7 @@ export default function AgentPanel({
   ) {
     if (isDynamicToolUIPart(part)) {
       return (
-        <div key={i}>
+        <div key={i} className="my-2 first:mt-0 last:mb-0">
           <ToolCallRenderer part={part} isResponseActive={responseActive} />
           {renderToolCall ? renderToolCall(part) : null}
         </div>
@@ -129,7 +129,7 @@ export default function AgentPanel({
     }
     if (isToolUIPart(part)) {
       return (
-        <div key={i}>
+        <div key={i} className="my-2 first:mt-0 last:mb-0">
           <ToolCallRenderer part={part} isResponseActive={responseActive} />
         </div>
       )

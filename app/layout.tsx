@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google"
+import { Geist, Geist_Mono } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import "./globals.css"
 
@@ -13,15 +13,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-})
-
 export const metadata: Metadata = {
   title: "agents.",
+  applicationName: "agents.",
   description:
-    "A collection of AI agent demonstrations — analyze transactions or generate PDF documents on demand.",
+    "Explore focused AI agents for transaction analysis, PDF and design generation, live web research, and single-file webpage building.",
 }
 
 export default function RootLayout({
@@ -33,7 +29,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

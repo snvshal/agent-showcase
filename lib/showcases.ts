@@ -1,4 +1,4 @@
-import { FileText, Palette, Receipt, Search, type LucideIcon } from "lucide-react"
+import { Code2, FileText, Palette, Receipt, Search, type LucideIcon } from "lucide-react"
 
 export interface ShowcaseMeta {
   key: string
@@ -50,5 +50,15 @@ export const SHOWCASES: ShowcaseMeta[] = [
       "Ask about news, specs, pricing, or comparisons to explore the live web with cited sources.",
     icon: Search,
     accent: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+  },
+  {
+    key: "webpage",
+    href: "/webpage",
+    label: "Webpage Builder",
+    title: "Webpage Builder",
+    description:
+      "Create and revise single-file web pages with editable source, a live preview, and downloadable HTML.",
+    icon: Code2,
+    accent: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
   },
 ]

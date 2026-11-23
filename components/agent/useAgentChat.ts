@@ -5,11 +5,11 @@ import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
 import { finalizeAbortedParts } from "@/components/agent/finalizeAbortedParts"
 
-export type AgentKey = "financial" | "pdf" | "design" | "search"
+export type AgentKey = "financial" | "pdf" | "design" | "search" | "webpage"
 
 type AbortIntent = "stop" | "clear"
 
-export function useAgentChat(agent: AgentKey) {
+export function useAgentChat(agent: AgentKey, getCurrentHtml?: () => string) {
   const chatRef = useRef<ReturnType<typeof useChat> | null>(null)
   const abortIntentRef = useRef<AbortIntent | null>(null)
 
@@ -17,6 +17,16 @@ export function useAgentChat(agent: AgentKey) {
     transport: new DefaultChatTransport({
       api: "/api/agent",
       body: { agent },
+      prepareSendMessagesRequest: ({ body, messages, id, trigger, messageId }) => ({
+        body: {
+          ...body,
+          id,
+          messages,
+          trigger,
+          messageId,
+          ...(agent === "webpage" && getCurrentHtml ? { currentHtml: getCurrentHtml() } : {}),
+        },
+      }),
     }),
     onFinish: ({ isAbort, messages }) => {
       const abortIntent = abortIntentRef.current
@@ -46,7 +56,11 @@ export function useAgentChat(agent: AgentKey) {
     const activeChat = chatRef.current
     if (!activeChat) return
 
-    abortIntentRef.current = "clear"
+    if (activeChat.status === "submitted" || activeChat.status === "streaming") {
+      abortIntentRef.current = "clear"
+    } else {
+      abortIntentRef.current = null
+    }
     void activeChat.stop()
     activeChat.setMessages([])
   }, [])

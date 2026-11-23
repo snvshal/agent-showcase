@@ -5,6 +5,7 @@ import type { DynamicToolUIPart, ToolUIPart, UITools } from "ai"
 import { getToolOrDynamicToolName } from "ai"
 import {
   CheckCircle2,
+  Code2,
   ChevronDown,
   CircleDashed,
   FileText,
@@ -40,6 +41,8 @@ function getToolIcon(toolName: string): ReactNode {
       return <Palette className="size-3.5" />
     case "generate_pdf":
       return <FileText className="size-3.5" />
+    case "generate_webpage":
+      return <Code2 className="size-3.5" />
     default:
       return <Wrench className="size-3.5" />
   }
@@ -65,12 +68,18 @@ export default function ToolCallRenderer({ part, isResponseActive }: ToolCallRen
   const isLoading = isResponseActive && isPending
   const hasBody = (isInput && part.input !== undefined) || isOutput || isError || isStopped
 
+  const webpageFilename =
+    toolName === "generate_webpage" && isOutput && part.output && typeof part.output === "object"
+      ? (part.output as { filename?: unknown }).filename
+      : undefined
+  const webpageReady = typeof webpageFilename === "string" ? webpageFilename : null
+
   const toolIcon = getToolIcon(toolName)
 
   if (isLoading) {
     return (
       <details
-        className="group border-border/70 bg-muted/20 my-2 overflow-hidden rounded-lg border text-xs shadow-2xs first:mt-0 last:mb-0"
+        className="group border-border/70 bg-muted/20 overflow-hidden rounded-lg border text-xs shadow-2xs"
         open
       >
         <summary className="hover:bg-muted/40 text-muted-foreground flex cursor-pointer list-none items-center justify-between px-3 py-2 transition-colors select-none [&::-webkit-details-marker]:hidden">
@@ -109,7 +118,7 @@ export default function ToolCallRenderer({ part, isResponseActive }: ToolCallRen
   }
 
   return (
-    <details className="group border-border/70 bg-muted/20 my-2 overflow-hidden rounded-lg border text-xs shadow-2xs first:mt-0 last:mb-0">
+    <details className="group border-border/70 bg-muted/20 overflow-hidden rounded-lg border text-xs shadow-2xs">
       <summary className="hover:bg-muted/40 text-muted-foreground flex cursor-pointer list-none items-center justify-between px-3 py-2 transition-colors select-none [&::-webkit-details-marker]:hidden">
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground/80 flex items-center justify-center">
@@ -154,7 +163,7 @@ export default function ToolCallRenderer({ part, isResponseActive }: ToolCallRen
                   e.preventDefault()
                   setActiveTab("output")
                 }}
-                className={`rounded px-1.5 py-0.5 font-medium transition-colors ${
+                className={`focus-visible:ring-ring rounded px-1.5 py-0.5 font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none ${
                   activeTab === "output"
                     ? "bg-background text-foreground shadow-2xs"
                     : "text-muted-foreground hover:text-foreground"
@@ -169,7 +178,7 @@ export default function ToolCallRenderer({ part, isResponseActive }: ToolCallRen
                     e.preventDefault()
                     setActiveTab("input")
                   }}
-                  className={`rounded px-1.5 py-0.5 font-medium transition-colors ${
+                  className={`focus-visible:ring-ring rounded px-1.5 py-0.5 font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none ${
                     activeTab === "input"
                       ? "bg-background text-foreground shadow-2xs"
                       : "text-muted-foreground hover:text-foreground"
@@ -198,6 +207,11 @@ export default function ToolCallRenderer({ part, isResponseActive }: ToolCallRen
               >
                 {part.errorText}
               </pre>
+            ) : webpageReady ? (
+              <div className="text-foreground/80 flex items-center gap-2 font-sans">
+                <Code2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="min-w-0 truncate">{webpageReady} is ready in the workspace.</span>
+              </div>
             ) : (
               <pre className="text-foreground/80 max-h-[180px] overflow-x-auto whitespace-pre-wrap">
                 {part.output !== undefined
