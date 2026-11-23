@@ -111,7 +111,7 @@ function DesignViewer({ design }: { design: DesignResult | null }) {
 }
 
 export default function DesignPage() {
-  const [tab, setTab] = useState<"preview" | "agent">("preview")
+  const [tab, setTab] = useState<"preview" | "agent">("agent")
   const [draft, setDraft] = useState("")
   const chat = useAgentChat("design")
 
@@ -124,6 +124,7 @@ export default function DesignPage() {
     if (latestUrl !== prevLatest.current) {
       prevLatest.current = latestUrl
       setSelected(null)
+      setTab("preview")
     }
   }, [design])
 
@@ -132,7 +133,9 @@ export default function DesignPage() {
   const handleNewChat = () => {
     chat.stopAndClear()
     revokeDesignObjectUrls()
+    prevLatest.current = null
     setDraft("")
+    setTab("agent")
   }
 
   const agentPanel = (
@@ -153,7 +156,10 @@ export default function DesignPage() {
             part={part}
             selected={result !== null && result.url === viewer?.url}
             onSelect={() => {
-              if (result) setSelected(result)
+              if (result) {
+                setSelected(result)
+                setTab("preview")
+              }
             }}
           />
         )

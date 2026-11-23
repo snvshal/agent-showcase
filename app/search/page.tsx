@@ -18,7 +18,7 @@ const EXAMPLES = [
 ]
 
 export default function SearchPage() {
-  const [tab, setTab] = useState<"sources" | "agent">("sources")
+  const [tab, setTab] = useState<"sources" | "agent">("agent")
   const [draft, setDraft] = useState("")
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
   const chat = useAgentChat("search")
@@ -61,6 +61,7 @@ export default function SearchPage() {
     chat.stopAndClear()
     setDraft("")
     setSelectedMessageId(null)
+    setTab("agent")
   }
 
   const agentPanel = (

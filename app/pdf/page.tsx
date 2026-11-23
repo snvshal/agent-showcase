@@ -74,7 +74,7 @@ function PdfViewer({ url }: { url: string | null }) {
 }
 
 export default function PdfPage() {
-  const [tab, setTab] = useState<"preview" | "agent">("preview")
+  const [tab, setTab] = useState<"preview" | "agent">("agent")
   const [draft, setDraft] = useState("")
   const chat = useAgentChat("pdf")
 
@@ -86,6 +86,7 @@ export default function PdfPage() {
     if (latestUrl !== prevLatest.current) {
       prevLatest.current = latestUrl
       setSelectedUrl(null)
+      setTab("preview")
     }
   }, [latestUrl])
 
@@ -94,7 +95,9 @@ export default function PdfPage() {
   const handleNewChat = () => {
     chat.stopAndClear()
     revokePdfObjectUrls()
+    prevLatest.current = null
     setDraft("")
+    setTab("agent")
   }
 
   const agentPanel = (
@@ -114,7 +117,10 @@ export default function PdfPage() {
           <PdfResultRenderer
             part={part}
             selected={url !== null && url === viewerUrl}
-            onSelect={(u) => setSelectedUrl(u)}
+            onSelect={(u) => {
+              setSelectedUrl(u)
+              setTab("preview")
+            }}
           />
         )
       }}

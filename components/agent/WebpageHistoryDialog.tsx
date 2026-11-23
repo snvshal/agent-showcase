@@ -126,7 +126,7 @@ export default function WebpageHistoryDialog({
         aria-labelledby="webpage-history-title"
         className="bg-background flex h-[min(92dvh,54rem)] max-h-[calc(100dvh-1.5rem)] min-h-[min(32rem,calc(100dvh-1.5rem))] w-full max-w-6xl flex-col overflow-hidden rounded-xl border shadow-xl sm:h-[min(90dvh,58rem)] sm:max-h-[calc(100dvh-3rem)] sm:min-h-[min(38rem,calc(100dvh-3rem))]"
       >
-        <header className="flex shrink-0 items-center gap-3 border-b px-4 py-3">
+        <header className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-3">
           <Clock3 className="text-muted-foreground size-4" />
           <div className="min-w-0 flex-1">
             <h2 id="webpage-history-title" className="text-sm font-semibold">
@@ -134,13 +134,14 @@ export default function WebpageHistoryDialog({
             </h2>
             <p className="text-muted-foreground text-xs">Latest 10 versions</p>
           </div>
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="order-last flex w-full shrink-0 items-center gap-2 sm:order-none sm:w-auto sm:gap-1">
             {selected && comparisonVersions.length > 0 && (
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setComparing((current) => !current)}
+                className="flex-1 sm:flex-none"
               >
                 {comparing ? (
                   <Eye className="size-3.5" />
@@ -151,23 +152,31 @@ export default function WebpageHistoryDialog({
               </Button>
             )}
             {isCurrentVersion ? (
-              <span className="text-muted-foreground px-2 text-xs">Current version</span>
+              <span className="text-muted-foreground flex-1 px-2 text-center text-xs sm:flex-none">
+                Current version
+              </span>
             ) : (
-              <Button type="button" size="sm" onClick={restore} disabled={!selected || restoring}>
+              <Button
+                type="button"
+                size="sm"
+                onClick={restore}
+                disabled={!selected || restoring}
+                className="flex-1 sm:flex-none"
+              >
                 <RotateCcw className="size-3.5" />
                 <span>{restoring ? "Restoring…" : "Restore"}</span>
               </Button>
             )}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Close history"
-              onClick={onClose}
-            >
-              <X className="size-4" />
-            </Button>
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Close history"
+            onClick={onClose}
+          >
+            <X className="size-4" />
+          </Button>
         </header>
 
         {visibleVersions.length === 0 ? (

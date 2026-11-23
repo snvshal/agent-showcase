@@ -15,13 +15,14 @@ const EXAMPLES = [
 ]
 
 export default function Home() {
-  const [tab, setTab] = useState<"data" | "agent">("data")
+  const [tab, setTab] = useState<"data" | "agent">("agent")
   const [draft, setDraft] = useState("")
   const chat = useAgentChat("financial")
 
   const handleNewChat = () => {
     chat.stopAndClear()
     setDraft("")
+    setTab("agent")
   }
 
   return (

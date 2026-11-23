@@ -262,7 +262,7 @@ function HtmlWorkspace({
 }
 
 export default function HtmlPage() {
-  const [tab, setTab] = useState<"workspace" | "agent">("workspace")
+  const [tab, setTab] = useState<"workspace" | "agent">("agent")
   const [workspaceView, setWorkspaceView] = useState<"preview" | "source">("preview")
   const [draft, setDraft] = useState("")
   const [html, setHtml] = useState(EMPTY_HTML)
@@ -365,6 +365,7 @@ export default function HtmlPage() {
     const document = getLatestDocument(chat.messages)
     if (!document || document.toolCallId === adoptedToolCallRef.current) return
     adoptedToolCallRef.current = document.toolCallId
+    setTab("workspace")
     const generation = ++adoptionGenerationRef.current
 
     const previousHtml = html
@@ -454,6 +455,7 @@ export default function HtmlPage() {
     setSavedHtml(nextHtml)
     setSavedFilename(nextFilename)
     setHistoryOpen(false)
+    setTab("workspace")
   }
 
   const handleNewChat = () => {
@@ -461,6 +463,7 @@ export default function HtmlPage() {
     adoptedToolCallRef.current = null
     adoptionGenerationRef.current += 1
     setDraft("")
+    setTab("agent")
   }
 
   useEffect(() => {
